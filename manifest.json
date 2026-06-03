@@ -1,0 +1,18 @@
+{
+  "name": "Bar Soutsu ジン教本",
+  "short_name": "ジン教本",
+  "description": "Bar Soutsu スタッフ向けのジン教育用アプリ。定義・歴史・製法・銘柄・接客まで体系で学ぶ。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#15120f",
+  "theme_color": "#15120f",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

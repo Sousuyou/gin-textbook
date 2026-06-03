@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#15120f" />
+    <title>Bar Soutsu ジン教本</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="has-nav">
+    <nav class="site-nav">
+      <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-cost-tool/">原価計算</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-recipe-book/">レシピ帳</a>
+      <a class="site-nav-link active" href="https://sousuyou.github.io/gin-textbook/">ジン教本</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-news/">ジンニュース</a>
+    </nav>
+    <main class="app-shell">
+      <!-- ===== ヘッダー ===== -->
+      <header class="hero">
+        <div class="hero-main">
+          <p class="brand-mark">Bar Soutsu</p>
+          <p class="eyebrow">Gin Textbook / Staff Training</p>
+          <h1 id="page-title">ジン教本</h1>
+          <p class="lead">
+            ジンを「定義・歴史・製法・銘柄・接客」まで体系で学ぶ、Bar Soutsu スタッフ向けの教本。
+            読み物として、現場のチートシートとして、味覚トレーニングの教材として使う。
+          </p>
+        </div>
+      </header>
+
+      <!-- ===== ビュー切替タブ ===== -->
+      <nav class="tabs" aria-label="表示切替">
+        <button class="tab is-active" data-view="textbook" type="button">教本</button>
+        <button class="tab" data-view="quiz" type="button">クイズ道場</button>
+        <button class="tab" data-view="cheatsheet" type="button">チートシート</button>
+      </nav>
+
+      <!-- ===== 教本ビュー ===== -->
+      <section id="view-textbook" class="view is-active" aria-label="教本">
+        <!-- 章一覧 -->
+        <div id="chapter-list-pane">
+          <div class="search-band">
+            <input
+              id="search"
+              type="search"
+              inputmode="search"
+              placeholder="章・キーワードで検索（例: ジュニパー、マティーニ、ネイビー）"
+              aria-label="教本内を検索"
+            />
+            <p id="search-status" class="search-status"></p>
+          </div>
+          <div id="chapter-grid" class="chapter-grid"></div>
+        </div>
+
+        <!-- 章リーダー -->
+        <article id="reader" class="reader" hidden>
+          <div class="reader-bar">
+            <button id="reader-back" class="link-btn" type="button">← 章一覧へ</button>
+            <button id="reader-read" class="read-toggle" type="button">読了にする</button>
+          </div>
+          <div id="reader-toc" class="reader-toc"></div>
+          <div id="reader-body" class="reader-body"></div>
+          <div id="reader-nav" class="reader-nav"></div>
+        </article>
+      </section>
+
+      <!-- ===== クイズ道場ビュー ===== -->
+      <section id="view-quiz" class="view" aria-label="クイズ道場" hidden>
+        <div id="quiz-home">
+          <p class="section-lead">
+            カテゴリを選んで実力を試す。各問、回答するとその場で正解と解説が出る。
+            終わったら自分の正答率を確認しよう。
+          </p>
+          <div id="quiz-categories" class="quiz-categories"></div>
+        </div>
+
+        <div id="quiz-runner" hidden>
+          <div class="reader-bar">
+            <button id="quiz-back" class="link-btn" type="button">← カテゴリ選択へ</button>
+            <span id="quiz-progress" class="quiz-progress"></span>
+          </div>
+          <div id="quiz-card" class="quiz-card"></div>
+        </div>
+      </section>
+
+      <!-- ===== チートシートビュー ===== -->
+      <section id="view-cheatsheet" class="view" aria-label="チートシート" hidden>
+        <p class="section-lead">
+          接客中・仕込み中にさっと確認するための早見表。数字は基本の型なので、店のレシピに合わせて調整すること。
+        </p>
+        <div id="cheatsheet-body" class="cheatsheet-body"></div>
+      </section>
+
+      <footer class="app-footer">
+        <span>Bar Soutsu ジン教本</span>
+        <span>社内教育用 / 数値・銘柄情報は要ファクトチェック（次回更新で精査）</span>
+      </footer>
+    </main>
+
+    <script src="content.js"></script>
+    <script src="quiz.js"></script>
+    <script src="cheatsheet.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
