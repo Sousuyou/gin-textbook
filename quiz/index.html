@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#15120f" />
+    <title>Bar Soutsu クイズ道場</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="../assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="../assets/icon.svg" />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="has-nav">
+    <nav class="site-nav">
+      <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-cost-tool/">原価計算</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-recipe-book/">レシピ帳</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-textbook/">ジン教本</a>
+      <a class="site-nav-link active" href="https://sousuyou.github.io/gin-textbook/quiz/">クイズ道場</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-textbook/cheatsheet/">チートシート</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-news/">ジンニュース</a>
+    </nav>
+    <main class="app-shell">
+      <header class="hero">
+        <div class="hero-main">
+          <p class="brand-mark">Bar Soutsu</p>
+          <p class="eyebrow">Gin Quiz / Staff Training</p>
+          <h1 id="page-title">クイズ道場</h1>
+          <p class="lead">
+            カテゴリを選んで実力を試す。回答するとその場で正解と解説が出る。
+            自己ベストは端末に記録される。学びの素材は<a href="https://sousuyou.github.io/gin-textbook/">ジン教本</a>へ。
+          </p>
+        </div>
+      </header>
+
+      <section class="view is-active" aria-label="クイズ道場">
+        <div id="quiz-home">
+          <div id="quiz-categories" class="quiz-categories"></div>
+        </div>
+
+        <div id="quiz-runner" hidden>
+          <div class="reader-bar">
+            <button id="quiz-back" class="link-btn" type="button">← カテゴリ選択へ</button>
+            <span id="quiz-progress" class="quiz-progress"></span>
+          </div>
+          <div id="quiz-card" class="quiz-card"></div>
+        </div>
+      </section>
+
+      <footer class="app-footer">
+        <span>Bar Soutsu クイズ道場</span>
+        <span>社内教育用</span>
+      </footer>
+    </main>
+
+    <script src="../quiz.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -60,11 +60,19 @@ input {
   border: 1px solid var(--line-strong);
   border-bottom: 0;
   background: var(--panel);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.site-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .site-nav-link {
   padding: 0 18px;
   min-height: 38px;
+  white-space: nowrap;
   display: grid;
   place-items: center;
   text-decoration: none;

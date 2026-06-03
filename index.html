@@ -15,6 +15,8 @@
       <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-cost-tool/">原価計算</a>
       <a class="site-nav-link" href="https://sousuyou.github.io/cocktail-recipe-book/">レシピ帳</a>
       <a class="site-nav-link active" href="https://sousuyou.github.io/gin-textbook/">ジン教本</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-textbook/quiz/">クイズ道場</a>
+      <a class="site-nav-link" href="https://sousuyou.github.io/gin-textbook/cheatsheet/">チートシート</a>
       <a class="site-nav-link" href="https://sousuyou.github.io/gin-news/">ジンニュース</a>
     </nav>
     <main class="app-shell">
@@ -26,7 +28,8 @@
           <h1 id="page-title">ジン教本</h1>
           <p class="lead">
             ジンを「定義・歴史・製法・銘柄・接客」まで体系で学ぶ、Bar Soutsu スタッフ向けの教本。
-            読み物として、現場のチートシートとして、味覚トレーニングの教材として使う。
+            読み物として読み込み、わからない用語は用語集タブで引く。
+            実力チェックは<a href="quiz/">クイズ道場</a>、現場の早見表は<a href="cheatsheet/">チートシート</a>へ。
           </p>
         </div>
       </header>
@@ -34,8 +37,6 @@
       <!-- ===== ビュー切替タブ ===== -->
       <nav class="tabs" aria-label="表示切替">
         <button class="tab is-active" data-view="textbook" type="button">教本</button>
-        <button class="tab" data-view="quiz" type="button">クイズ道場</button>
-        <button class="tab" data-view="cheatsheet" type="button">チートシート</button>
         <button class="tab" data-view="glossary" type="button">用語集</button>
       </nav>
 
@@ -68,33 +69,6 @@
         </article>
       </section>
 
-      <!-- ===== クイズ道場ビュー ===== -->
-      <section id="view-quiz" class="view" aria-label="クイズ道場" hidden>
-        <div id="quiz-home">
-          <p class="section-lead">
-            カテゴリを選んで実力を試す。各問、回答するとその場で正解と解説が出る。
-            終わったら自分の正答率を確認しよう。
-          </p>
-          <div id="quiz-categories" class="quiz-categories"></div>
-        </div>
-
-        <div id="quiz-runner" hidden>
-          <div class="reader-bar">
-            <button id="quiz-back" class="link-btn" type="button">← カテゴリ選択へ</button>
-            <span id="quiz-progress" class="quiz-progress"></span>
-          </div>
-          <div id="quiz-card" class="quiz-card"></div>
-        </div>
-      </section>
-
-      <!-- ===== チートシートビュー ===== -->
-      <section id="view-cheatsheet" class="view" aria-label="チートシート" hidden>
-        <p class="section-lead">
-          接客中・仕込み中にさっと確認するための早見表。数字は基本の型なので、店のレシピに合わせて調整すること。
-        </p>
-        <div id="cheatsheet-body" class="cheatsheet-body"></div>
-      </section>
-
       <!-- ===== 用語集ビュー ===== -->
       <section id="view-glossary" class="view" aria-label="用語集" hidden>
         <div class="search-band">
@@ -117,8 +91,6 @@
     </main>
 
     <script src="content.js"></script>
-    <script src="quiz.js"></script>
-    <script src="cheatsheet.js"></script>
     <script src="glossary.js"></script>
     <script src="app.js"></script>
   </body>

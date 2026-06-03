@@ -1,0 +1,13 @@
+{
+  "name": "Bar Soutsu チートシート",
+  "short_name": "チートシート",
+  "description": "Bar Soutsu スタッフ向けの接客早見表。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#15120f",
+  "theme_color": "#15120f",
+  "icons": [
+    { "src": "../assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
