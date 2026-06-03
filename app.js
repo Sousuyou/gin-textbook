@@ -5,6 +5,7 @@
   var CHAPTERS = window.GIN_CONTENT || [];
   var QUIZ = window.GIN_QUIZ || [];
   var CHEATS = window.GIN_CHEATSHEET || [];
+  var GLOSSARY = window.GIN_GLOSSARY || [];
 
   // カテゴリの日本語ラベル
   var CAT_LABEL = {
@@ -335,6 +336,60 @@
     });
   }
 
+  // ================= 用語集 =================
+  var glossaryCat = "all";
+
+  function renderGlossaryCats() {
+    var cats = ["all"];
+    GLOSSARY.forEach(function (g) {
+      if (cats.indexOf(g.category) === -1) cats.push(g.category);
+    });
+    var wrap = $("glossary-cats");
+    wrap.innerHTML = cats.map(function (c) {
+      var label = c === "all" ? "すべて" : c;
+      return '<button type="button" class="gloss-chip' + (c === glossaryCat ? " is-active" : "") +
+        '" data-cat="' + escapeHtml(c) + '">' + escapeHtml(label) + "</button>";
+    }).join("");
+    wrap.querySelectorAll(".gloss-chip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        glossaryCat = b.dataset.cat;
+        renderGlossaryCats();
+        renderGlossary($("glossary-search").value);
+      });
+    });
+  }
+
+  function renderGlossary(filter) {
+    var wrap = $("glossary-body");
+    var q = (filter || "").trim().toLowerCase();
+    var items = GLOSSARY.filter(function (g) {
+      if (glossaryCat !== "all" && g.category !== glossaryCat) return false;
+      if (!q) return true;
+      return (g.term + " " + (g.reading || "") + " " + g.def).toLowerCase().indexOf(q) !== -1;
+    });
+    // 五十音（reading）順に並べる
+    items.sort(function (a, b) { return (a.reading || a.term).localeCompare(b.reading || b.term, "ja"); });
+
+    if (!items.length) {
+      wrap.innerHTML = '<p class="gloss-empty">該当する用語がありません。</p>';
+      return;
+    }
+    wrap.innerHTML = items.map(function (g) {
+      return '<div class="gloss-item">' +
+        '<div class="gloss-term"><span class="gt-name">' + escapeHtml(g.term) + "</span>" +
+        '<span class="gt-cat">' + escapeHtml(g.category) + "</span></div>" +
+        '<p class="gloss-def">' + escapeHtml(g.def) + "</p>" +
+      "</div>";
+    }).join("");
+  }
+
+  var glossTimer = null;
+  $("glossary-search").addEventListener("input", function () {
+    clearTimeout(glossTimer);
+    var v = $("glossary-search").value;
+    glossTimer = setTimeout(function () { renderGlossary(v); }, 120);
+  });
+
   // ---- util ----
   function escapeHtml(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -346,6 +401,8 @@
   renderChapterList("");
   renderQuizCategories();
   renderCheatsheet();
+  renderGlossaryCats();
+  renderGlossary("");
 
   // PWA: service worker 登録
   if ("serviceWorker" in navigator) {

@@ -695,6 +695,82 @@ h1 {
   color: var(--muted);
 }
 
+/* ===== 用語集 ===== */
+.glossary-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.gloss-chip {
+  padding: 5px 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.gloss-chip:hover {
+  background: var(--green-soft);
+}
+
+.gloss-chip.is-active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.glossary-body {
+  display: grid;
+  gap: 8px;
+}
+
+.gloss-item {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-left: 3px solid var(--green);
+}
+
+.gloss-term {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.gt-name {
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.gt-cat {
+  flex: none;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+
+.gloss-def {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.gloss-empty {
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding: 12px 2px;
+}
+
 /* ===== フッター ===== */
 .app-footer {
   display: flex;

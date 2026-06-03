@@ -36,6 +36,7 @@
         <button class="tab is-active" data-view="textbook" type="button">教本</button>
         <button class="tab" data-view="quiz" type="button">クイズ道場</button>
         <button class="tab" data-view="cheatsheet" type="button">チートシート</button>
+        <button class="tab" data-view="glossary" type="button">用語集</button>
       </nav>
 
       <!-- ===== 教本ビュー ===== -->
@@ -94,6 +95,21 @@
         <div id="cheatsheet-body" class="cheatsheet-body"></div>
       </section>
 
+      <!-- ===== 用語集ビュー ===== -->
+      <section id="view-glossary" class="view" aria-label="用語集" hidden>
+        <div class="search-band">
+          <input
+            id="glossary-search"
+            type="search"
+            inputmode="search"
+            placeholder="用語を検索（例: フィクサティブ、ステア、ネイビー）"
+            aria-label="用語集を検索"
+          />
+          <div id="glossary-cats" class="glossary-cats"></div>
+        </div>
+        <div id="glossary-body" class="glossary-body"></div>
+      </section>
+
       <footer class="app-footer">
         <span>Bar Soutsu ジン教本</span>
         <span>社内教育用 / 数値・銘柄情報は要ファクトチェック（次回更新で精査）</span>
@@ -103,6 +119,7 @@
     <script src="content.js"></script>
     <script src="quiz.js"></script>
     <script src="cheatsheet.js"></script>
+    <script src="glossary.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
