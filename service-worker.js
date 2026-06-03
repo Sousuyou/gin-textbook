@@ -1,5 +1,8 @@
 // Bar Soutsu ジン教本 — オフライン用 Service Worker
-var CACHE = "ginbook-v1";
+// 更新方針: stale-while-revalidate
+//   表示は高速なキャッシュから返しつつ、裏で最新を取得してキャッシュを更新する。
+//   コンテンツを更新したら CACHE の版数（vN）を上げること。
+var CACHE = "ginbook-v2";
 var ASSETS = [
   "./",
   "./index.html",
@@ -32,11 +35,17 @@ self.addEventListener("activate", function (e) {
 
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
-    caches.match(e.request).then(function (hit) {
-      return hit || fetch(e.request).then(function (res) {
-        return res;
-      }).catch(function () { return hit; });
+    caches.open(CACHE).then(function (cache) {
+      return cache.match(e.request).then(function (hit) {
+        var network = fetch(e.request).then(function (res) {
+          if (res && res.status === 200) cache.put(e.request, res.clone());
+          return res;
+        }).catch(function () { return hit; });
+        // キャッシュがあれば即返し、裏で更新。無ければネットワークを待つ。
+        return hit || network;
+      });
     })
   );
 });
