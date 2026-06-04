@@ -1,6 +1,6 @@
 {
-  "name": "Bar Soutsu チートシート",
-  "short_name": "チートシート",
+  "name": "Bar Soutsu 早見表",
+  "short_name": "早見表",
   "description": "Bar Soutsu スタッフ向けの接客早見表。",
   "start_url": "./index.html",
   "scope": "./",

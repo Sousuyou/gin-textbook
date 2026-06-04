@@ -1,4 +1,4 @@
-// Bar Soutsu チートシート（独立ページ）
+// Bar Soutsu 早見表（独立ページ）
 (function () {
   "use strict";
 
