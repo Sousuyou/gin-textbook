@@ -22,6 +22,7 @@ SRC_FILES = [
     "../gin_chapters/chapter_05_06.md",
     "../gin_chapters/chapter_07_08.md",
     "../gin_chapters/chapter_09_13.md",
+    "../gin_chapters/chapter_16_17.md",
 ]
 
 # 章ごとのカテゴリ（クイズ道場・色分けで使用）
@@ -30,6 +31,7 @@ CHAPTER_CATEGORY = {
     5: "classification", 6: "brands", 7: "japan", 8: "cocktail",
     9: "tasting", 10: "culture", 11: "guide", 12: "market",
     13: "gintonic", 14: "homemade", 15: "service",
+    16: "service", 17: "tasting",
 }
 
 HERE = os.path.dirname(os.path.abspath(__file__))
