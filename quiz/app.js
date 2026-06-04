@@ -40,17 +40,27 @@
   var quizSession = null;
 
   function startQuiz(cat) {
-    quizSession = { cat: cat, idx: 0, score: 0 };
+    quizSession = { cat: cat, idx: 0, score: 0, wrong: [] };
     $("quiz-home").hidden = true;
     $("quiz-runner").hidden = false;
     renderQuizQuestion();
     window.scrollTo(0, 0);
   }
 
+  function setBar(current, total) {
+    var bar = $("quiz-bar");
+    var fill = $("quiz-bar-fill");
+    if (!bar || !fill) return;
+    bar.style.display = "block";
+    var pct = total ? Math.round((current / total) * 100) : 0;
+    fill.style.width = pct + "%";
+  }
+
   function renderQuizQuestion() {
     var s = quizSession;
     var cat = s.cat;
     $("quiz-progress").textContent = "第" + (s.idx + 1) + "問 / " + cat.questions.length;
+    setBar(s.idx + 1, cat.questions.length);
 
     if (s.idx >= cat.questions.length) {
       renderQuizResult();
@@ -83,7 +93,16 @@
       else if (i === picked) b.classList.add("is-wrong");
     });
 
-    if (picked === qd.answer) quizSession.score++;
+    if (picked === qd.answer) {
+      quizSession.score++;
+    } else {
+      quizSession.wrong.push({
+        q: qd.q,
+        your: qd.options[picked],
+        correct: qd.options[qd.answer],
+        explain: qd.explain,
+      });
+    }
 
     var after = card.querySelector(".quiz-after");
     after.hidden = false;
@@ -118,12 +137,33 @@
       "ここからが伸びしろ。まずはジン教本を一読しよう。";
 
     $("quiz-progress").textContent = "結果";
+    setBar(total, total);
+
+    var review = "";
+    if (s.wrong.length) {
+      review =
+        '<div class="quiz-review">' +
+          '<h3>間違えた問題のおさらい（' + s.wrong.length + "問）</h3>" +
+          s.wrong.map(function (w) {
+            return '<div class="qr-item">' +
+              '<p class="qr-q">' + escapeHtml(w.q) + "</p>" +
+              '<p class="qr-line qr-correct"><span>正解</span>' + escapeHtml(w.correct) + "</p>" +
+              '<p class="qr-line qr-your"><span>あなた</span>' + escapeHtml(w.your) + "</p>" +
+              '<p class="qr-explain">' + escapeHtml(w.explain) + "</p>" +
+            "</div>";
+          }).join("") +
+        "</div>";
+    } else {
+      review = '<p class="quiz-allcorrect">全問正解！おさらいはありません。</p>';
+    }
+
     $("quiz-card").innerHTML =
       '<div class="quiz-result">' +
         '<div class="score">' + s.score + " / " + total + "</div>" +
         "<p>" + msg + "</p>" +
         '<button class="quiz-next" type="button" id="quiz-retry">もう一度</button>' +
-      "</div>";
+      "</div>" +
+      review;
     $("quiz-retry").addEventListener("click", function () { startQuiz(s.cat); });
   }
 

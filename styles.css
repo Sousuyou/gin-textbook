@@ -583,8 +583,93 @@ h1 {
   color: var(--muted);
 }
 
+/* 進捗シークバー */
+.quiz-bar {
+  display: none;
+  height: 6px;
+  margin: 0 0 16px;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.quiz-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--green);
+  transition: width 260ms ease;
+}
+
 .quiz-card {
   padding: 4px;
+}
+
+/* 間違えた問題のおさらい */
+.quiz-review {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.quiz-review h3 {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.qr-item {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  background: var(--panel);
+}
+
+.qr-q {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.qr-line {
+  margin: 2px 0;
+  font-size: 0.82rem;
+}
+
+.qr-line span {
+  display: inline-block;
+  min-width: 3.6em;
+  margin-right: 6px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  color: var(--on-accent);
+  vertical-align: middle;
+}
+
+.qr-correct span {
+  background: var(--green);
+}
+
+.qr-your span {
+  background: var(--red);
+}
+
+.qr-explain {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.quiz-allcorrect {
+  margin-top: 18px;
+  text-align: center;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.86rem;
 }
 
 .quiz-q {
@@ -687,7 +772,7 @@ h1 {
   margin: 16px auto 0;
 }
 
-/* ===== チートシート ===== */
+/* ===== 早見表 ===== */
 .cheatsheet-body {
   display: grid;
   gap: 14px;
