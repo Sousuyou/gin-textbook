@@ -28,8 +28,8 @@ SRC_FILES = [
 CHAPTER_CATEGORY = {
     1: "basics", 2: "history", 3: "production", 4: "botanical",
     5: "classification", 6: "brands", 7: "japan", 8: "cocktail",
-    9: "tasting", 10: "pairing", 11: "culture", 12: "guide", 13: "market",
-    14: "gintonic", 15: "homemade", 16: "service",
+    9: "tasting", 10: "culture", 11: "guide", 12: "market",
+    13: "gintonic", 14: "homemade", 15: "service",
 }
 
 HERE = os.path.dirname(os.path.abspath(__file__))
