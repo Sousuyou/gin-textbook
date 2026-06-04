@@ -2,7 +2,7 @@
 // 更新方針: stale-while-revalidate
 //   表示は高速なキャッシュから返しつつ、裏で最新を取得してキャッシュを更新する。
 //   コンテンツを更新したら CACHE の版数（vN）を上げること。
-var CACHE = "ginbook-v5";
+var CACHE = "ginbook-v6";
 var ASSETS = [
   "./",
   "./index.html",
