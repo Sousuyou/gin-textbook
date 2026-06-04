@@ -40,6 +40,22 @@
   }
 }
 
+/* ===== 本文中のリンク（テーマ色に統一・標準の青を上書き） ===== */
+.lead a,
+.reader-body a,
+.cc-body a {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.lead a:hover,
+.reader-body a:hover,
+.cc-body a:hover {
+  color: var(--accent);
+}
+
 * {
   box-sizing: border-box;
 }
