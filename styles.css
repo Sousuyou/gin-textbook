@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --bg: #e9e9e5;
   --paper: #fbfaf6;
   --panel: #fbfaf6;
@@ -10,11 +10,34 @@
   --text: #161616;
   --muted: #6f6d67;
   --accent: #161616;
+  --on-accent: #ffffff;    /* accent色の上に乗せる文字色 */
   --green: #3f6b54;        /* ボタニカルグリーン */
   --green-soft: #e7efe8;
   --gold: #9a7b32;
   --red: #a72821;
   --shadow: 0 18px 42px rgba(30, 30, 27, 0.08);
+}
+
+/* ===== ダークモード（端末設定に自動追従） ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14130f;
+    --paper: #1c1b16;
+    --panel: #1c1b16;
+    --panel-soft: #242219;
+    --field: #211f19;
+    --line: #3a382f;
+    --line-strong: #6f6c5f;
+    --text: #ece9df;
+    --muted: #a09c8e;
+    --accent: #ece9df;
+    --on-accent: #14130f;
+    --green: #93bf97;
+    --green-soft: #23302a;
+    --gold: #d8ad62;
+    --red: #d8736c;
+    --shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+  }
 }
 
 * {
@@ -95,7 +118,7 @@ input {
 
 .site-nav-link.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 body.has-nav .app-shell {
@@ -166,7 +189,7 @@ h1 {
 
 .tab.is-active {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* ===== ビュー ===== */
@@ -325,7 +348,7 @@ h1 {
 .read-toggle.is-read {
   background: var(--green);
   border-color: var(--green);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .reader-toc {
@@ -592,7 +615,7 @@ h1 {
 .quiz-opt.is-correct {
   background: var(--green);
   border-color: var(--green);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .quiz-opt.is-wrong {
@@ -621,7 +644,7 @@ h1 {
   min-height: 46px;
   border: 1px solid var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -664,7 +687,7 @@ h1 {
   padding: 11px 14px;
   font-size: 0.86rem;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .cheat-card .cheat-inner {
@@ -729,7 +752,7 @@ h1 {
 .gloss-chip.is-active {
   background: var(--green);
   border-color: var(--green);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .glossary-body {
