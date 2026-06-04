@@ -28,10 +28,9 @@ SRC_FILES = [
 # 章ごとのカテゴリ（クイズ道場・色分けで使用）
 CHAPTER_CATEGORY = {
     1: "basics", 2: "history", 3: "production", 4: "botanical",
-    5: "classification", 6: "brands", 7: "japan", 8: "cocktail",
-    9: "tasting", 10: "culture", 11: "guide", 12: "market",
-    13: "gintonic", 14: "homemade", 15: "service",
-    16: "service", 17: "tasting",
+    5: "classification", 6: "brands", 7: "japan", 8: "tasting",
+    9: "culture", 10: "guide", 11: "market", 12: "gintonic",
+    13: "homemade", 14: "service", 15: "service", 16: "tasting",
 }
 
 HERE = os.path.dirname(os.path.abspath(__file__))
