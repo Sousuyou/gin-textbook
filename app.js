@@ -11,6 +11,7 @@
     classification: "分類", brands: "銘柄", japan: "日本", cocktail: "カクテル",
     tasting: "テイスティング", pairing: "ペアリング", culture: "文化",
     guide: "ガイド", market: "市場",
+    gintonic: "G&T設計", homemade: "自家製", service: "サービス",
   };
 
   // ---- localStorage ヘルパー ----

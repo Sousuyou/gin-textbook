@@ -29,6 +29,7 @@ CHAPTER_CATEGORY = {
     1: "basics", 2: "history", 3: "production", 4: "botanical",
     5: "classification", 6: "brands", 7: "japan", 8: "cocktail",
     9: "tasting", 10: "pairing", 11: "culture", 12: "guide", 13: "market",
+    14: "gintonic", 15: "homemade", 16: "service",
 }
 
 HERE = os.path.dirname(os.path.abspath(__file__))
