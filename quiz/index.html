@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- セキュリティ: 読み込み元を自サイトに限定（万一の不正スクリプト実行を阻止） -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'"
+    />
     <meta name="theme-color" content="#15120f" />
     <title>Bar Soutsu クイズ道場</title>
     <link rel="manifest" href="manifest.json" />
