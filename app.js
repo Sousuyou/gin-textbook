@@ -16,6 +16,8 @@
 
   // ---- localStorage ヘルパー ----
   var STORE_READ = "ginbook_read";
+  var STORE_MEMO = "ginbook_memo";   // 「覚えた」章
+  var STORE_FAV = "ginbook_fav";     // お気に入り章
 
   function load(key) {
     try {
@@ -33,6 +35,8 @@
   }
 
   var readState = load(STORE_READ);
+  var memoState = load(STORE_MEMO);
+  var favState = load(STORE_FAV);
 
   // ---- 要素参照 ----
   var $ = function (id) { return document.getElementById(id); };
@@ -47,23 +51,65 @@
   tabs.forEach(function (tab) {
     tab.addEventListener("click", function () {
       var view = tab.dataset.view;
-      tabs.forEach(function (t) { t.classList.toggle("is-active", t === tab); });
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.classList.toggle("is-active", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
       document.querySelectorAll(".view").forEach(function (v) {
         var on = v.id === "view-" + view;
         v.classList.toggle("is-active", on);
         v.hidden = !on;
       });
+      // タブ切替時は前タブの検索文字が残らないようにリセットする
+      if (view === "textbook") {
+        var gs = $("glossary-search");
+        if (gs && gs.value) { gs.value = ""; renderGlossary(""); }
+        renderChapterList(search.value);
+      } else if (view === "glossary") {
+        if (search.value) { search.value = ""; renderChapterList(""); }
+        renderGlossary($("glossary-search").value);
+      }
+      hideTip();
       window.scrollTo(0, 0);
     });
   });
 
+  // ================= 学習進捗バー =================
+  function updateProgress() {
+    var total = CHAPTERS.length;
+    var done = 0;
+    CHAPTERS.forEach(function (ch) { if (readState[ch.num]) done++; });
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    var label = $("progress-label");
+    var fill = $("progress-fill");
+    var track = $("progress-track");
+    if (label) label.textContent = "全 " + total + " 章中 " + done + " 章 読了（" + pct + "%）";
+    if (fill) fill.style.width = pct + "%";
+    if (track) track.setAttribute("aria-valuenow", String(pct));
+  }
+
   // ================= 教本：章一覧 =================
+  var listFilter = "all"; // all / unread / read / memorized / favorite
+
+  function passFilter(ch) {
+    switch (listFilter) {
+      case "unread": return !readState[ch.num];
+      case "read": return !!readState[ch.num];
+      case "memorized": return !!memoState[ch.num];
+      case "favorite": return !!favState[ch.num];
+      default: return true;
+    }
+  }
+
   function renderChapterList(filter) {
     grid.innerHTML = "";
     var q = (filter || "").trim().toLowerCase();
     var shown = 0;
 
     CHAPTERS.forEach(function (ch) {
+      if (!passFilter(ch)) return;
+
       var hitCount = 0;
       if (q) {
         var hay = (ch.title + " " + ch.sections.join(" ") + " " + ch.text).toLowerCase();
@@ -80,26 +126,56 @@
       card.addEventListener("click", function () { openChapter(ch.num); });
 
       var isRead = readState[ch.num];
+      var marks = "";
+      if (favState[ch.num]) marks += '<span class="cc-flag cc-fav">★ お気に入り</span>';
+      if (memoState[ch.num]) marks += '<span class="cc-flag cc-memo">覚えた</span>';
+
+      // 検索語ハイライト付きタイトル
+      var titleHtml = q ? highlight(ch.title, q) : escapeHtml(ch.title);
+
       card.innerHTML =
         '<div class="cc-top">' +
           '<span class="cc-num">第' + ch.num + "章" + (isRead ? ' · <span class="cc-read-flag">読了</span>' : "") + "</span>" +
           '<span class="cc-cat">' + (CAT_LABEL[ch.category] || ch.category) + "</span>" +
         "</div>" +
-        '<div class="cc-title">' + escapeHtml(ch.title) + "</div>" +
+        '<div class="cc-title">' + titleHtml + "</div>" +
+        (marks ? '<div class="cc-marks">' + marks + "</div>" : "") +
         '<div class="cc-meta">' + ch.sections.length + " 節" +
           (q && hitCount ? ' · <span class="search-hits">該当 ' + hitCount + "</span>" : "") +
         "</div>";
       grid.appendChild(card);
     });
 
+    var filterNote = listFilter === "all" ? "" :
+      "（絞り込み: " + filterLabel(listFilter) + "）";
+
     if (q) {
       searchStatus.textContent = shown
-        ? shown + " 章が該当（章を開くとブラウザ内検索でさらに絞り込めます）"
-        : "該当する章がありません。別のキーワードを試してください。";
+        ? shown + " 章が該当" + filterNote + "（章を開くとブラウザ内検索でさらに絞り込めます）"
+        : "該当する章がありません。別のキーワードや絞り込みを試してください。";
+    } else if (listFilter !== "all") {
+      searchStatus.textContent = shown
+        ? shown + " 章を表示中" + filterNote + "。"
+        : "この条件に当てはまる章はまだありません。";
     } else {
       searchStatus.textContent = "全 " + CHAPTERS.length + " 章。読んだ章は左に緑のラインが付きます。";
     }
   }
+
+  function filterLabel(f) {
+    return { unread: "未読", read: "読了", memorized: "覚えた", favorite: "お気に入り" }[f] || f;
+  }
+
+  // 絞り込みチップ
+  document.querySelectorAll("#chapter-filters .filter-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      listFilter = chip.dataset.filter;
+      document.querySelectorAll("#chapter-filters .filter-chip").forEach(function (c) {
+        c.classList.toggle("is-active", c === chip);
+      });
+      renderChapterList(search.value);
+    });
+  });
 
   // ================= 教本：リーダー =================
   var currentNum = null;
@@ -127,8 +203,12 @@
     }
 
     // 本文（章タイトルを先頭に付与）
-    $("reader-body").innerHTML =
+    var body = $("reader-body");
+    body.innerHTML =
       "<h2>第" + ch.num + "章　" + escapeHtml(ch.title) + "</h2>" + ch.html;
+
+    // 本文中の用語をインライン辞書化
+    decorateGlossaryTerms(body);
 
     // 目次内アンカーをスムーズスクロールに
     toc.querySelectorAll("a").forEach(function (a) {
@@ -140,6 +220,7 @@
     });
 
     updateReadToggle();
+    updateMarkToggles();
     renderReaderNav(num);
     window.scrollTo(0, 0);
   }
@@ -172,6 +253,19 @@
     btn.textContent = isRead ? "✓ 読了済み" : "読了にする";
   }
 
+  function updateMarkToggles() {
+    var fav = $("reader-fav");
+    var memo = $("reader-memo");
+    var isFav = !!favState[currentNum];
+    var isMemo = !!memoState[currentNum];
+    fav.classList.toggle("is-on", isFav);
+    fav.setAttribute("aria-pressed", isFav ? "true" : "false");
+    fav.textContent = isFav ? "★ お気に入り済み" : "★ お気に入り";
+    memo.classList.toggle("is-on", isMemo);
+    memo.setAttribute("aria-pressed", isMemo ? "true" : "false");
+    memo.textContent = isMemo ? "✓ 覚えた" : "覚えた";
+  }
+
   $("reader-read").addEventListener("click", function () {
     if (readState[currentNum]) {
       delete readState[currentNum];
@@ -180,11 +274,27 @@
     }
     save(STORE_READ, readState);
     updateReadToggle();
+    updateProgress();
+  });
+
+  $("reader-fav").addEventListener("click", function () {
+    if (favState[currentNum]) delete favState[currentNum];
+    else favState[currentNum] = true;
+    save(STORE_FAV, favState);
+    updateMarkToggles();
+  });
+
+  $("reader-memo").addEventListener("click", function () {
+    if (memoState[currentNum]) delete memoState[currentNum];
+    else memoState[currentNum] = true;
+    save(STORE_MEMO, memoState);
+    updateMarkToggles();
   });
 
   $("reader-back").addEventListener("click", function () {
     reader.hidden = true;
     listPane.hidden = false;
+    hideTip();
     renderChapterList(search.value);
     window.scrollTo(0, 0);
   });
@@ -196,8 +306,130 @@
     searchTimer = setTimeout(function () { renderChapterList(search.value); }, 120);
   });
 
+  // ================= 本文インライン辞書 =================
+  // 用語を長い順に並べておく（長い語を先にマッチさせて部分被りを防ぐ）
+  var TERM_INDEX = GLOSSARY
+    .filter(function (g) { return g.term && g.term.length >= 2; })
+    .slice()
+    .sort(function (a, b) { return b.term.length - a.term.length; });
+
+  var TERM_MAP = {};
+  TERM_INDEX.forEach(function (g) { if (!TERM_MAP[g.term]) TERM_MAP[g.term] = g; });
+
+  // 本文テキストノードを走査し、用語に一致する箇所を辞書ボタン化する
+  function decorateGlossaryTerms(root) {
+    if (!TERM_INDEX.length) return;
+    var marked = {}; // 1章につき同じ用語は最初の1回だけ装飾
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var p = node.parentNode;
+        // 見出し・既存リンク・コード内などは対象外
+        while (p && p !== root) {
+          var tag = p.nodeName;
+          if (tag === "A" || tag === "CODE" || tag === "H1" || tag === "H2" ||
+              tag === "H3" || tag === "H4" || tag === "H5" || tag === "BUTTON") {
+            return NodeFilter.FILTER_REJECT;
+          }
+          p = p.parentNode;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+
+    var textNodes = [];
+    var n;
+    while ((n = walker.nextNode())) textNodes.push(n);
+
+    textNodes.forEach(function (node) {
+      var text = node.nodeValue;
+      var found = null, foundIdx = -1, foundTerm = null;
+      // この一致候補のうち、最も前方に出現する用語を選ぶ
+      for (var i = 0; i < TERM_INDEX.length; i++) {
+        var t = TERM_INDEX[i].term;
+        if (marked[t]) continue;
+        var idx = text.indexOf(t);
+        if (idx !== -1 && (foundIdx === -1 || idx < foundIdx || (idx === foundIdx && t.length > foundTerm.length))) {
+          found = TERM_INDEX[i]; foundIdx = idx; foundTerm = t;
+        }
+      }
+      if (!found) return;
+
+      marked[foundTerm] = true;
+      var before = text.slice(0, foundIdx);
+      var after = text.slice(foundIdx + foundTerm.length);
+      var frag = document.createDocumentFragment();
+      if (before) frag.appendChild(document.createTextNode(before));
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "term-link";
+      btn.textContent = foundTerm;
+      btn.setAttribute("data-term", foundTerm);
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        showTip(btn, found);
+      });
+      frag.appendChild(btn);
+      if (after) frag.appendChild(document.createTextNode(after));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  var tipEl = $("term-tip");
+
+  function showTip(anchor, g) {
+    if (!tipEl) return;
+    tipEl.innerHTML =
+      '<div class="tip-head"><span class="tip-term">' + escapeHtml(g.term) + "</span>" +
+      '<span class="tip-cat">' + escapeHtml(g.category) + "</span></div>" +
+      (g.reading ? '<p class="tip-reading">' + escapeHtml(g.reading) + "</p>" : "") +
+      '<p class="tip-def">' + escapeHtml(g.def) + "</p>" +
+      '<button type="button" class="tip-close" aria-label="閉じる">閉じる</button>';
+    tipEl.hidden = false;
+
+    // 位置決め（アンカーの下に出す。画面外にはみ出さないよう調整）
+    var rect = anchor.getBoundingClientRect();
+    var tipW = Math.min(300, window.innerWidth - 20);
+    tipEl.style.width = tipW + "px";
+    var left = rect.left + window.scrollX;
+    if (left + tipW > window.scrollX + window.innerWidth - 10) {
+      left = window.scrollX + window.innerWidth - tipW - 10;
+    }
+    if (left < window.scrollX + 10) left = window.scrollX + 10;
+    var top = rect.bottom + window.scrollY + 6;
+    tipEl.style.left = left + "px";
+    tipEl.style.top = top + "px";
+
+    tipEl.querySelector(".tip-close").addEventListener("click", function (e) {
+      e.stopPropagation();
+      hideTip();
+    });
+  }
+
+  function hideTip() {
+    if (tipEl) { tipEl.hidden = true; tipEl.innerHTML = ""; }
+  }
+
+  // 外側タップ・スクロール・Escで閉じる
+  document.addEventListener("click", function (e) {
+    if (tipEl && !tipEl.hidden && !tipEl.contains(e.target) &&
+        !(e.target.classList && e.target.classList.contains("term-link"))) {
+      hideTip();
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") hideTip();
+  });
+
   // ================= 用語集 =================
   var glossaryCat = "all";
+
+  function catCount(c) {
+    if (c === "all") return GLOSSARY.length;
+    var n = 0;
+    GLOSSARY.forEach(function (g) { if (g.category === c) n++; });
+    return n;
+  }
 
   function renderGlossaryCats() {
     var cats = ["all"];
@@ -206,7 +438,7 @@
     });
     var wrap = $("glossary-cats");
     wrap.innerHTML = cats.map(function (c) {
-      var label = c === "all" ? "すべて" : c;
+      var label = (c === "all" ? "すべて" : c) + " (" + catCount(c) + ")";
       return '<button type="button" class="gloss-chip' + (c === glossaryCat ? " is-active" : "") +
         '" data-cat="' + escapeHtml(c) + '">' + escapeHtml(label) + "</button>";
     }).join("");
@@ -236,9 +468,9 @@
     }
     wrap.innerHTML = items.map(function (g) {
       return '<div class="gloss-item">' +
-        '<div class="gloss-term"><span class="gt-name">' + escapeHtml(g.term) + "</span>" +
+        '<div class="gloss-term"><span class="gt-name">' + (q ? highlight(g.term, q) : escapeHtml(g.term)) + "</span>" +
         '<span class="gt-cat">' + escapeHtml(g.category) + "</span></div>" +
-        '<p class="gloss-def">' + escapeHtml(g.def) + "</p>" +
+        '<p class="gloss-def">' + (q ? highlight(g.def, q) : escapeHtml(g.def)) + "</p>" +
       "</div>";
     }).join("");
   }
@@ -257,10 +489,37 @@
     });
   }
 
+  // 検索語をエスケープした上で <mark> で囲む（大小文字を無視）
+  function highlight(text, q) {
+    var str = String(text);
+    if (!q) return escapeHtml(str);
+    var lower = str.toLowerCase();
+    var ql = q.toLowerCase();
+    var out = "";
+    var i = 0, idx;
+    while ((idx = lower.indexOf(ql, i)) !== -1) {
+      out += escapeHtml(str.slice(i, idx));
+      out += '<mark class="hl">' + escapeHtml(str.slice(idx, idx + ql.length)) + "</mark>";
+      i = idx + ql.length;
+    }
+    out += escapeHtml(str.slice(i));
+    return out;
+  }
+
   // ================= 初期化 =================
   renderChapterList("");
   renderGlossaryCats();
   renderGlossary("");
+  updateProgress();
+
+  // 別ページ（クイズ等）から「#ch-N」で特定章へ直接来た場合に開く
+  (function openFromHash() {
+    var m = (location.hash || "").match(/^#ch-(\d+)$/);
+    if (m) {
+      var num = parseInt(m[1], 10);
+      if (CHAPTERS.some(function (c) { return c.num === num; })) openChapter(num);
+    }
+  })();
 
   // PWA: service worker 登録
   if ("serviceWorker" in navigator) {

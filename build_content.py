@@ -81,6 +81,24 @@ def md_to_html(lines):
         line = lines[i].rstrip("\n")
         stripped = line.strip()
 
+        # 自店の見解ボックス（::: soutsu [サブタイトル] … :::）
+        # 一般的な事実と区別して、Bar Soutsuの研究・所感・独自レシピを囲む。
+        m_box = re.match(r"^:::\s*soutsu\b\s*(.*)$", stripped)
+        if m_box:
+            flush_para()
+            subtitle = m_box.group(1).strip()
+            box_lines = []
+            i += 1
+            while i < n and not lines[i].strip().startswith(":::"):
+                box_lines.append(lines[i])
+                i += 1
+            i += 1  # 閉じ ::: を読み飛ばす
+            head = '<div class="soutsu-note-label">BAR SOUTSU ── 研究ノート</div>'
+            if subtitle:
+                head += f'<div class="soutsu-note-title">{render_inline(subtitle)}</div>'
+            out.append('<aside class="soutsu-note">' + head + md_to_html(box_lines) + "</aside>")
+            continue
+
         # テーブル
         if stripped.startswith("|") and "|" in stripped[1:]:
             flush_para()

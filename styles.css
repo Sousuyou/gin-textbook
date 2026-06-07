@@ -178,6 +178,204 @@ h1 {
   line-height: 1.7;
 }
 
+/* ===== 学習進捗バー ===== */
+.progress-band {
+  margin-top: 16px;
+}
+
+.progress-label {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.progress-track {
+  height: 8px;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--green);
+  transition: width 260ms ease;
+}
+
+/* ===== 検索ハイライト ===== */
+mark.hl {
+  background: var(--gold);
+  color: var(--on-accent);
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+/* ===== 章の絞り込みチップ ===== */
+.chapter-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.filter-chip {
+  padding: 5px 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.filter-chip:hover {
+  background: var(--green-soft);
+}
+
+.filter-chip.is-active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on-accent);
+}
+
+/* 章カードの「覚えた／お気に入り」マーク */
+.cc-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cc-flag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+}
+
+.cc-flag.cc-fav {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.cc-flag.cc-memo {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* リーダーの「覚えた／お気に入り」ボタン */
+.reader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.mark-toggle {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mark-toggle.is-on {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on-accent);
+}
+
+#reader-fav.is-on {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ===== 本文インライン辞書（用語リンク＆ツールチップ） ===== */
+.term-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--green);
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 1px dotted var(--green);
+  line-height: inherit;
+}
+
+.term-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.term-tip {
+  position: absolute;
+  z-index: 50;
+  max-width: 300px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+.term-tip .tip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.term-tip .tip-term {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.term-tip .tip-cat {
+  flex: none;
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+
+.term-tip .tip-reading {
+  margin: 0 0 6px;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.term-tip .tip-def {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.term-tip .tip-close {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 32px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-soft);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.term-tip .tip-close:hover {
+  background: var(--green-soft);
+}
+
 /* ===== タブ ===== */
 .tabs {
   display: flex;
@@ -480,6 +678,19 @@ h1 {
   overflow-x: auto;
   margin: 0 0 16px;
   -webkit-overflow-scrolling: touch;
+  /* 横スクロールできることを示す「端の影（グラデ）」。
+     左右の単色カバーと、その内側のスクロール連動シャドウを重ねる。
+     列が切れて見えるだけ、という誤解を防ぐ。 */
+  background-image:
+    linear-gradient(to right, var(--panel), var(--panel)),
+    linear-gradient(to left, var(--panel), var(--panel)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0)),
+    linear-gradient(to left, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0));
+  background-position: left center, right center, left center, right center;
+  background-repeat: no-repeat;
+  background-color: var(--panel);
+  background-size: 22px 100%, 22px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .reader-body table {
@@ -720,9 +931,78 @@ h1 {
 }
 
 .quiz-opt.is-wrong {
-  background: #f3dada;
+  background: var(--green-soft);
   border-color: var(--red);
   color: var(--red);
+}
+
+/* 選択肢の○×ラベル（色だけに頼らない・色覚配慮） */
+.opt-mark {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  vertical-align: middle;
+}
+
+.opt-mark-correct {
+  background: var(--on-accent);
+  color: var(--green);
+  border: 1px solid currentColor;
+}
+
+.opt-mark-wrong {
+  background: var(--panel);
+  color: var(--red);
+  border: 1px solid currentColor;
+}
+
+/* クイズ解説から教本への直リンク */
+.quiz-explain-link {
+  margin: 8px 0 0;
+}
+
+.quiz-textbook-link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.quiz-textbook-link:hover {
+  color: var(--accent);
+}
+
+/* 結果画面のボタン配置 */
+.quiz-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.quiz-result-actions .quiz-next {
+  margin-top: 0;
+  width: auto;
+  flex: 1 1 140px;
+  max-width: 220px;
+}
+
+.quiz-next-alt {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.quiz-next-alt:hover {
+  background: var(--green-soft);
+}
+
+.quiz-result-link {
+  margin: 10px 0 0;
 }
 
 .quiz-explain {
@@ -781,6 +1061,7 @@ h1 {
 .cheat-card {
   border: 1px solid var(--line);
   background: var(--panel);
+  min-width: 0;
 }
 
 .cheat-card > h3 {
@@ -796,7 +1077,10 @@ h1 {
 }
 
 .cheat-card table {
+  /* 表に最小幅を持たせ、画面が狭いときは親(.cheat-inner)が横スクロールになる。
+     これで「横に続きがある」ことが端の影で分かる（列が切れて見える誤解を防ぐ）。 */
   width: 100%;
+  min-width: 420px;
   border-collapse: collapse;
   font-size: 0.78rem;
 }
@@ -941,4 +1225,42 @@ h1 {
   .reader-body h2 {
     font-size: 1.25rem;
   }
+}
+
+/* ── Bar Soutsu「研究ノート（自店の見解）」ボックス ─────────────── */
+/* 一般的な事実とは区別して、自店の研究・所感・独自レシピを示すための囲み。 */
+/* 記法：本文Markdownに  ::: soutsu サブタイトル  …  :::  と書く。       */
+.reader-body .soutsu-note {
+  margin: 28px 0;
+  padding: 18px 20px 16px;
+  background: var(--green-soft);
+  border: 1px solid var(--green);
+  border-left: 6px solid var(--green);
+  border-radius: 0;            /* ラボラトリー紙テーマ：角ばった枠 */
+}
+.reader-body .soutsu-note-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.reader-body .soutsu-note-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.reader-body .soutsu-note p {
+  margin: 0 0 10px;
+}
+.reader-body .soutsu-note a {
+  color: var(--green);
+}
+.reader-body .soutsu-note > p:last-child,
+.reader-body .soutsu-note > ul:last-child,
+.reader-body .soutsu-note > ol:last-child {
+  margin-bottom: 0;
 }

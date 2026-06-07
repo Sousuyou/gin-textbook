@@ -4,6 +4,21 @@
 
   var QUIZ = window.GIN_QUIZ || [];
   var STORE_QUIZ = "ginbook_quizbest";
+  var TEXTBOOK_URL = "https://sousuyou.github.io/gin-textbook/";
+
+  // クイズのカテゴリID → 教本の該当章番号（分かるものだけ）。
+  // 不明なものは教本トップへ誘導する。
+  var CAT_TO_CHAPTER = {
+    basics: 1,
+    history: 2,
+    production: 3,
+    botanical: 4,
+    classification: 5,
+    brands: 6,
+    cocktail: 12,   // ジントニック設計の章が最も近い
+    tasting: 8,
+    // service / advanced / master は対応章が一意でないため教本トップへ
+  };
 
   function load(key) {
     try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch (e) { return {}; }
@@ -18,6 +33,26 @@
     return String(s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
+  }
+
+  // 配列をシャッフル（Fisher–Yates）。元配列は壊さない。
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // 該当カテゴリの教本リンクHTMLを返す
+  function textbookLink(catId) {
+    var ch = CAT_TO_CHAPTER[catId];
+    if (ch) {
+      return '<a class="quiz-textbook-link" href="' + TEXTBOOK_URL + "#ch-" + ch +
+        '">教本 第' + ch + "章を読む →</a>";
+    }
+    return '<a class="quiz-textbook-link" href="' + TEXTBOOK_URL + '">教本で復習する →</a>';
   }
 
   function renderQuizCategories() {
@@ -40,7 +75,7 @@
   var quizSession = null;
 
   function startQuiz(cat) {
-    quizSession = { cat: cat, idx: 0, score: 0, wrong: [] };
+    quizSession = { cat: cat, idx: 0, score: 0, wrong: [], order: null };
     $("quiz-home").hidden = true;
     $("quiz-runner").hidden = false;
     renderQuizQuestion();
@@ -68,6 +103,11 @@
     }
 
     var qd = cat.questions[s.idx];
+
+    // 選択肢をシャッフルし、表示順 → 元indexの対応を作る
+    var order = shuffle(qd.options.map(function (_, i) { return i; }));
+    s.order = order;
+
     var card = $("quiz-card");
     card.innerHTML =
       '<p class="quiz-q"><span class="q-cat">' + escapeHtml(cat.name) + "</span>" + escapeHtml(qd.q) + "</p>" +
@@ -75,22 +115,30 @@
       '<div class="quiz-after" hidden></div>';
 
     var opts = card.querySelector(".quiz-options");
-    qd.options.forEach(function (opt, i) {
+    order.forEach(function (origIdx) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = "quiz-opt";
-      b.textContent = opt;
-      b.addEventListener("click", function () { answerQuiz(i, qd, opts, card); });
+      b.textContent = qd.options[origIdx];
+      b.addEventListener("click", function () { answerQuiz(origIdx, qd, opts, card); });
       opts.appendChild(b);
     });
   }
 
   function answerQuiz(picked, qd, opts, card) {
     var buttons = opts.querySelectorAll(".quiz-opt");
-    buttons.forEach(function (b, i) {
+    var order = quizSession.order;
+    buttons.forEach(function (b, displayIdx) {
       b.disabled = true;
-      if (i === qd.answer) b.classList.add("is-correct");
-      else if (i === picked) b.classList.add("is-wrong");
+      var origIdx = order[displayIdx];
+      // 色だけに頼らず ○×アイコン＋文字も添える（色覚配慮）
+      if (origIdx === qd.answer) {
+        b.classList.add("is-correct");
+        b.insertAdjacentHTML("beforeend", '<span class="opt-mark opt-mark-correct">○ 正解</span>');
+      } else if (origIdx === picked) {
+        b.classList.add("is-wrong");
+        b.insertAdjacentHTML("beforeend", '<span class="opt-mark opt-mark-wrong">× 不正解</span>');
+      }
     });
 
     if (picked === qd.answer) {
@@ -108,8 +156,10 @@
     after.hidden = false;
     after.innerHTML =
       '<div class="quiz-explain"><strong>' +
-        (picked === qd.answer ? "正解！" : "不正解。正解は「" + escapeHtml(qd.options[qd.answer]) + "」") +
-      "</strong>" + escapeHtml(qd.explain) + "</div>" +
+        (picked === qd.answer ? "○ 正解！" : "× 不正解。正解は「" + escapeHtml(qd.options[qd.answer]) + "」") +
+      "</strong>" + escapeHtml(qd.explain) +
+      '<p class="quiz-explain-link">' + textbookLink(quizSession.cat.id) + "</p>" +
+      "</div>" +
       '<button class="quiz-next" type="button">' +
         (quizSession.idx + 1 >= quizSession.cat.questions.length ? "結果を見る" : "次の問題へ") +
       "</button>";
@@ -147,8 +197,8 @@
           s.wrong.map(function (w) {
             return '<div class="qr-item">' +
               '<p class="qr-q">' + escapeHtml(w.q) + "</p>" +
-              '<p class="qr-line qr-correct"><span>正解</span>' + escapeHtml(w.correct) + "</p>" +
-              '<p class="qr-line qr-your"><span>あなた</span>' + escapeHtml(w.your) + "</p>" +
+              '<p class="qr-line qr-correct"><span>○ 正解</span>' + escapeHtml(w.correct) + "</p>" +
+              '<p class="qr-line qr-your"><span>× あなた</span>' + escapeHtml(w.your) + "</p>" +
               '<p class="qr-explain">' + escapeHtml(w.explain) + "</p>" +
             "</div>";
           }).join("") +
@@ -161,18 +211,25 @@
       '<div class="quiz-result">' +
         '<div class="score">' + s.score + " / " + total + "</div>" +
         "<p>" + msg + "</p>" +
-        '<button class="quiz-next" type="button" id="quiz-retry">もう一度</button>' +
+        '<p class="quiz-result-link">' + textbookLink(s.cat.id) + "</p>" +
+        '<div class="quiz-result-actions">' +
+          '<button class="quiz-next" type="button" id="quiz-retry">もう一度</button>' +
+          '<button class="quiz-next quiz-next-alt" type="button" id="quiz-other">他のカテゴリへ</button>' +
+        "</div>" +
       "</div>" +
       review;
     $("quiz-retry").addEventListener("click", function () { startQuiz(s.cat); });
+    $("quiz-other").addEventListener("click", function () { goHome(); });
   }
 
-  $("quiz-back").addEventListener("click", function () {
+  function goHome() {
     $("quiz-runner").hidden = true;
     $("quiz-home").hidden = false;
     renderQuizCategories();
     window.scrollTo(0, 0);
-  });
+  }
+
+  $("quiz-back").addEventListener("click", goHome);
 
   renderQuizCategories();
 

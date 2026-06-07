@@ -46,10 +46,18 @@
         </div>
       </header>
 
+      <!-- ===== 学習進捗バー（常時表示） ===== -->
+      <div id="progress-band" class="progress-band">
+        <p id="progress-label" class="progress-label"></p>
+        <div class="progress-track" role="progressbar" aria-label="学習進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-track">
+          <span id="progress-fill" class="progress-fill"></span>
+        </div>
+      </div>
+
       <!-- ===== ビュー切替タブ ===== -->
-      <nav class="tabs" aria-label="表示切替">
-        <button class="tab is-active" data-view="textbook" type="button">教本</button>
-        <button class="tab" data-view="glossary" type="button">用語集</button>
+      <nav class="tabs" aria-label="表示切替" role="tablist">
+        <button class="tab is-active" data-view="textbook" type="button" role="tab" aria-selected="true" aria-controls="view-textbook">教本</button>
+        <button class="tab" data-view="glossary" type="button" role="tab" aria-selected="false" aria-controls="view-glossary">用語集</button>
       </nav>
 
       <!-- ===== 教本ビュー ===== -->
@@ -64,6 +72,13 @@
               placeholder="章・キーワードで検索（例: ジュニパー、マティーニ、ネイビー）"
               aria-label="教本内を検索"
             />
+            <div id="chapter-filters" class="chapter-filters" aria-label="章の絞り込み">
+              <button type="button" class="filter-chip is-active" data-filter="all">すべて</button>
+              <button type="button" class="filter-chip" data-filter="unread">未読</button>
+              <button type="button" class="filter-chip" data-filter="read">読了</button>
+              <button type="button" class="filter-chip" data-filter="memorized">覚えた</button>
+              <button type="button" class="filter-chip" data-filter="favorite">★ お気に入り</button>
+            </div>
             <p id="search-status" class="search-status"></p>
           </div>
           <div id="chapter-grid" class="chapter-grid"></div>
@@ -73,7 +88,11 @@
         <article id="reader" class="reader" hidden>
           <div class="reader-bar">
             <button id="reader-back" class="link-btn" type="button">← 章一覧へ</button>
-            <button id="reader-read" class="read-toggle" type="button">読了にする</button>
+            <div class="reader-actions">
+              <button id="reader-fav" class="mark-toggle" type="button" aria-pressed="false" title="お気に入りに追加">★ お気に入り</button>
+              <button id="reader-memo" class="mark-toggle" type="button" aria-pressed="false" title="覚えたに追加">覚えた</button>
+              <button id="reader-read" class="read-toggle" type="button">読了にする</button>
+            </div>
           </div>
           <div id="reader-toc" class="reader-toc"></div>
           <div id="reader-body" class="reader-body"></div>
@@ -101,6 +120,9 @@
         <span>社内教育用 / 数値・銘柄情報は要ファクトチェック（次回更新で精査）</span>
       </footer>
     </main>
+
+    <!-- 本文用語のインライン辞書ツールチップ（JSで内容を差し込む） -->
+    <div id="term-tip" class="term-tip" hidden role="dialog" aria-label="用語の説明"></div>
 
     <script src="content.js"></script>
     <script src="glossary.js"></script>
