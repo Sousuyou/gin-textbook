@@ -60,10 +60,10 @@
     wrap.innerHTML = "";
     var hardShown = false;
     QUIZ.forEach(function (cat) {
-      if (cat.tier === "難問" && !hardShown) {
+      if (cat.tier === "上級" && !hardShown) {
         var divider = document.createElement("div");
         divider.className = "quiz-zone-divider";
-        divider.textContent = "腕試し・難問ゾーン";
+        divider.textContent = "上級者向け";
         wrap.appendChild(divider);
         hardShown = true;
       }
