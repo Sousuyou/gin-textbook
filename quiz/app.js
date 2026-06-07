@@ -58,7 +58,15 @@
   function renderQuizCategories() {
     var wrap = $("quiz-categories");
     wrap.innerHTML = "";
+    var hardShown = false;
     QUIZ.forEach(function (cat) {
+      if (cat.tier === "難問" && !hardShown) {
+        var divider = document.createElement("div");
+        divider.className = "quiz-zone-divider";
+        divider.textContent = "腕試し・難問ゾーン";
+        wrap.appendChild(divider);
+        hardShown = true;
+      }
       var best = quizBest[cat.id];
       var card = document.createElement("button");
       card.type = "button";

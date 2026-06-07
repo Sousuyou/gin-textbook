@@ -756,6 +756,18 @@ mark.hl {
   gap: 10px;
 }
 
+.quiz-zone-divider {
+  grid-column: 1 / -1;
+  margin: 22px 0 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
 .quiz-cat-card {
   display: flex;
   flex-direction: column;
