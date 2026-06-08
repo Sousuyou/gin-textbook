@@ -2,7 +2,7 @@
 // 更新方針: ページ本体(HTML)とJSONは「ネットワーク優先」で常に最新を取得し、
 //   オフライン時のみキャッシュを使う。画像・CSS・JSは「キャッシュ優先」で高速表示。
 //   コンテンツを更新したら CACHE の版数（vN）を上げること。
-var CACHE = "ginbook-v22";
+var CACHE = "ginbook-v23";
 var ASSETS = [
   "./",
   "./index.html",
