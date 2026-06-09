@@ -1,5 +1,5 @@
 // Bar Soutsu クイズ道場 — Service Worker（stale-while-revalidate）
-var CACHE = "ginquiz-v18";
+var CACHE = "ginquiz-v19";
 var ASSETS = [
   "./",
   "./index.html",

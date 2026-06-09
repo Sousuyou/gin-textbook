@@ -128,14 +128,23 @@
   function renderQuizCategories() {
     var wrap = $("quiz-categories");
     wrap.innerHTML = "";
-    var hardShown = false;
+    // バンド（編）ごとの見出し。色は左罫線で区別（styles.css非依存のインライン）。
+    var BAND_LABELS = { "基礎": "基礎編", "応用": "応用編", "研究": "研究編", "腕試し": "腕試し" };
+    var BAND_COLORS = { "基礎": "#3f6b54", "応用": "#41618f", "研究": "#6b4f8c", "腕試し": "#a4503a" };
+    var currentBand = null;
     QUIZ.forEach(function (cat) {
-      if (cat.tier === "上級" && !hardShown) {
-        var divider = document.createElement("div");
-        divider.className = "quiz-zone-divider";
-        divider.textContent = "上級者向け";
-        wrap.appendChild(divider);
-        hardShown = true;
+      var band = cat.tier || "基礎";
+      if (band !== currentBand) {
+        currentBand = band;
+        var header = document.createElement("div");
+        header.className = "quiz-band-header";
+        header.setAttribute("style",
+          "grid-column:1/-1;margin:22px 0 6px;padding:7px 0 7px 12px;" +
+          "border-left:5px solid " + (BAND_COLORS[band] || "#888") + ";" +
+          "border-bottom:1px solid var(--line);font-weight:700;" +
+          "font-size:0.95rem;letter-spacing:0.04em;color:var(--text);");
+        header.textContent = BAND_LABELS[band] || band;
+        wrap.appendChild(header);
       }
       var best = quizBest[cat.id];
       var denom = cat.generated ? BOTANICAL_N : cat.questions.length;
