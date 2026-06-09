@@ -193,8 +193,7 @@
       ? '<div class="quiz-sub" style="margin:10px 0 16px;display:flex;flex-wrap:wrap;gap:7px;">' +
         splitBotanicals(qd.sub).map(function (b) {
           return '<span style="display:inline-block;padding:5px 12px;border-radius:16px;' +
-            'font-size:0.88em;font-weight:600;color:#5a3a00;' +
-            'background:linear-gradient(135deg,#ffe08a,#ffb259);">' + escapeHtml(b) + "</span>";
+            'font-size:0.88em;color:#5a3a00;background:#ffd56b;">' + escapeHtml(b) + "</span>";
         }).join("") +
         "</div>"
       : "";
