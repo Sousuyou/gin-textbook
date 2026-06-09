@@ -136,21 +136,27 @@
       var band = cat.tier || "基礎";
       if (band !== currentBand) {
         currentBand = band;
-        var header = document.createElement("div");
-        header.className = "quiz-band-header";
-        header.setAttribute("style",
-          "grid-column:1/-1;margin:22px 0 6px;padding:7px 0 7px 12px;" +
-          "border-left:5px solid " + (BAND_COLORS[band] || "#888") + ";" +
-          "border-bottom:1px solid var(--line);font-weight:700;" +
-          "font-size:0.95rem;letter-spacing:0.04em;color:var(--text);");
-        header.textContent = BAND_LABELS[band] || band;
-        wrap.appendChild(header);
+        // 「特別」は見出しを出さず、カード自体を金枠にして特別感を出す
+        if (band !== "特別") {
+          var header = document.createElement("div");
+          header.className = "quiz-band-header";
+          header.setAttribute("style",
+            "grid-column:1/-1;margin:22px 0 6px;padding:7px 0 7px 12px;" +
+            "border-left:5px solid " + (BAND_COLORS[band] || "#888") + ";" +
+            "border-bottom:1px solid var(--line);font-weight:700;" +
+            "font-size:0.95rem;letter-spacing:0.04em;color:var(--text);");
+          header.textContent = BAND_LABELS[band] || band;
+          wrap.appendChild(header);
+        }
       }
       var best = quizBest[cat.id];
       var denom = cat.generated ? BOTANICAL_N : cat.questions.length;
       var card = document.createElement("button");
       card.type = "button";
       card.className = "quiz-cat-card";
+      if (cat.tier === "特別") {
+        card.style.border = "2px solid " + (BAND_COLORS["特別"] || "#bd8a2c");
+      }
       card.innerHTML =
         "<strong>" + escapeHtml(cat.name) + "</strong>" +
         "<span>" + escapeHtml(cat.desc) + " · 全" + denom + "問</span>" +
