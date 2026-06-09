@@ -3,6 +3,14 @@
 // q: 問題文 / options: 選択肢 / answer: 正解のindex / explain: 解説
 window.GIN_QUIZ = [
   {
+    id: "botanical_guess",
+    name: "ボタニカル当て",
+    desc: "ボタニカルから銘柄を当てる（在庫カタログ連動）",
+    tier: "特別",
+    generated: "botanical",
+    questions: [],
+  },
+  {
     id: "basics",
     name: "定義・基礎編",
     desc: "ジンとは何か／他スピリッツとの違い（教本「定義と概要」）",
@@ -1531,13 +1539,5 @@ window.GIN_QUIZ = [
         explain: "ジンはオランダ語 jenever の短縮形で、語源はジュニパーを指すラテン語 juniperus。英国でジュネヴァが訛り『ジン』として定着した。geneva は英語化した呼び名。",
       },
     ],
-  },
-  {
-    id: "botanical_guess",
-    name: "ボタニカル当て",
-    desc: "ボタニカルから銘柄を当てる（在庫カタログ連動）",
-    tier: "腕試し",
-    generated: "botanical",
-    questions: [],
   },
 ];

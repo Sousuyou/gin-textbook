@@ -129,8 +129,8 @@
     var wrap = $("quiz-categories");
     wrap.innerHTML = "";
     // バンド（編）ごとの見出し。色は左罫線で区別（styles.css非依存のインライン）。
-    var BAND_LABELS = { "基礎": "基礎編", "応用": "応用編", "研究": "研究編", "腕試し": "腕試し" };
-    var BAND_COLORS = { "基礎": "#3f6b54", "応用": "#41618f", "研究": "#6b4f8c", "腕試し": "#a4503a" };
+    var BAND_LABELS = { "特別": "特別クイズ", "基礎": "基礎編", "応用": "応用編", "研究": "研究編", "腕試し": "腕試し" };
+    var BAND_COLORS = { "特別": "#bd8a2c", "基礎": "#3f6b54", "応用": "#41618f", "研究": "#6b4f8c", "腕試し": "#a4503a" };
     var currentBand = null;
     QUIZ.forEach(function (cat) {
       var band = cat.tier || "基礎";
