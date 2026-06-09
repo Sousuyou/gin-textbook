@@ -95,10 +95,24 @@
     }
   }
 
+  // 編（基礎/応用/研究）グループ。章番号の上限で区切る。
+  var BANDS = [
+    { name: "基礎編", note: "ジンを知る土台", max: 8 },
+    { name: "応用編", note: "現場での応用", max: 14 },
+    { name: "研究編", note: "テーマ別の深掘り大全", max: Infinity },
+  ];
+  function bandOf(num) {
+    for (var i = 0; i < BANDS.length; i++) {
+      if (num <= BANDS[i].max) return BANDS[i];
+    }
+    return BANDS[BANDS.length - 1];
+  }
+
   function renderChapterList(filter) {
     grid.innerHTML = "";
     var q = (filter || "").trim().toLowerCase();
     var shown = 0;
+    var lastBand = null;
 
     CHAPTERS.forEach(function (ch) {
       if (!passFilter(ch)) return;
@@ -112,6 +126,18 @@
         while ((idx = hay.indexOf(q, idx)) !== -1) { hitCount++; idx += q.length; }
       }
       shown++;
+
+      // 編（基礎/応用/研究）が切り替わったら見出しを差し込む
+      var band = bandOf(ch.num);
+      if (band !== lastBand) {
+        lastBand = band;
+        var header = document.createElement("div");
+        header.className = "band-header";
+        header.innerHTML =
+          '<span class="band-name">' + band.name + "</span>" +
+          '<span class="band-note">' + band.note + "</span>";
+        grid.appendChild(header);
+      }
 
       var card = document.createElement("button");
       card.type = "button";

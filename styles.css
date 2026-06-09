@@ -456,6 +456,32 @@ mark.hl {
   gap: 10px;
 }
 
+/* 編（基礎/応用/研究）の区切り見出し。グリッド全幅で表示する */
+.band-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 2px;
+  padding: 6px 0 6px 12px;
+  border-left: 6px solid var(--green);
+  border-bottom: 1px solid var(--line);
+}
+.band-header:first-child {
+  margin-top: 4px;
+}
+.band-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+.band-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .chapter-card {
   display: flex;
   flex-direction: column;
@@ -754,6 +780,12 @@ mark.hl {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.quiz-loading {
+  padding: 36px 12px;
+  text-align: center;
+  color: var(--muted);
 }
 
 .quiz-zone-divider {
