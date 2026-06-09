@@ -99,7 +99,9 @@
   var BANDS = [
     { name: "基礎編", note: "ジンを知る土台", max: 8 },
     { name: "応用編", note: "現場での応用", max: 14 },
-    { name: "研究編", note: "テーマ別の深掘り大全", max: Infinity },
+    { name: "研究編", note: "テーマ別の深掘り大全", max: 29 },
+    { name: "用語・リファレンス", note: "年表・用語集・図解で引く", max: 37 },
+    { name: "銘柄図鑑", note: "銘柄ごとの詳細プロフィール", max: Infinity },
   ];
   function bandOf(num) {
     for (var i = 0; i < BANDS.length; i++) {

@@ -23,7 +23,7 @@ SRC_FILES = [
     "../gin_chapters/chapter_07_08.md",
     "../gin_chapters/chapter_09_13.md",
     "../gin_chapters/chapter_14_flavor.md",
-    "../gin_chapters/chapter_15_29_research.md",  # 研究編（ジン研究所の大全を書き出したもの）
+    "../gin_chapters/chapter_research.md",  # 研究編（ジン研究所の大全＋用語＋銘柄を書き出したもの）
 ]
 
 # 章ごとのカテゴリ（クイズ道場・色分けで使用）
@@ -38,6 +38,11 @@ CHAPTER_CATEGORY = {
     23: "tasting", 24: "tasting", 25: "history", 26: "tasting",
     27: "gintonic", 28: "gintonic", 29: "market",
 }
+# 研究編の続き: 用語・リファレンス（第30〜37章）と銘柄図鑑（第38章〜）
+for _n in range(30, 38):
+    CHAPTER_CATEGORY[_n] = "guide"
+for _n in range(38, 200):
+    CHAPTER_CATEGORY[_n] = "brands"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
