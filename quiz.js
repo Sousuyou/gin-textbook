@@ -1262,4 +1262,12 @@ window.GIN_QUIZ = [
       },
     ],
   },
+  {
+    id: "botanical_guess",
+    name: "ボタニカル当て",
+    desc: "ボタニカルから銘柄を当てる（在庫カタログ連動）",
+    tier: "上級",
+    generated: "botanical",
+    questions: [],
+  },
 ];

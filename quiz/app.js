@@ -47,12 +47,76 @@
 
   // 該当カテゴリの教本リンクHTMLを返す
   function textbookLink(catId) {
+    if (catId === "botanical_guess") {
+      return '<a class="quiz-textbook-link" href="https://sousuyou.github.io/gin-stock/">在庫カタログで確認 →</a>';
+    }
     var ch = CAT_TO_CHAPTER[catId];
     if (ch) {
       return '<a class="quiz-textbook-link" href="' + TEXTBOOK_URL + "#ch-" + ch +
         '">教本 第' + ch + "章を読む →</a>";
     }
     return '<a class="quiz-textbook-link" href="' + TEXTBOOK_URL + '">教本で復習する →</a>';
+  }
+
+  // ====== ボタニカル当てクイズ（在庫カタログ連動）======
+  // 同一オリジンの公開カタログ。CSP connect-src 'self' 対応のため相対パスで取得。
+  var CATALOG_URL = "../../gin-stock/gins.json";
+  var BOTANICAL_N = 10; // 1回の出題数
+
+  function splitBotanicals(s) {
+    return String(s || "").split(/[、,／\/]/).map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+
+  // 在庫データから「ボタニカル → 銘柄当て」問題を生成する
+  function buildBotanicalQuestions(gins) {
+    var pool = gins.filter(function (g) {
+      return g && g.botanicals && splitBotanicals(g.botanicals).length >= 3 && (g.kana || g.name);
+    });
+    var label = function (g) { return g.kana || g.name; };
+    return shuffle(pool).slice(0, BOTANICAL_N).map(function (ans) {
+      // 表示名が重複しない誤答を5つ選ぶ（カナが同じ別銘柄の混入を防ぐ）
+      var seen = {}; seen[label(ans)] = true;
+      var distractors = [];
+      var others = shuffle(pool);
+      for (var i = 0; i < others.length && distractors.length < 5; i++) {
+        var lb = label(others[i]);
+        if (seen[lb]) continue;
+        seen[lb] = true;
+        distractors.push(others[i]);
+      }
+      var choices = distractors.concat([ans]); // 表示時にapp側で再シャッフルされる
+      return {
+        q: "このボタニカルで造られるジンはどれ？　／　" + ans.botanicals,
+        options: choices.map(label),
+        answer: choices.length - 1,
+        explain: (ans.kana || ans.name) + "（" + ans.name + "）｜" +
+          (ans.country || "産地不明") + "・" + (ans.abv != null ? ans.abv + "%" : "度数不明") +
+          (String(ans.note || "").trim() ? "。" + String(ans.note).trim().slice(0, 70) : ""),
+      };
+    });
+  }
+
+  // カテゴリ起動。在庫連動カテゴリは取得→生成してから開始する。
+  function launchCategory(cat) {
+    if (cat.generated !== "botanical") { startQuiz(cat); return; }
+    $("quiz-home").hidden = true;
+    $("quiz-runner").hidden = false;
+    $("quiz-progress").textContent = "読み込み中…";
+    $("quiz-card").innerHTML = '<p class="quiz-loading">在庫カタログからジンのデータを取得しています…</p>';
+    fetch(CATALOG_URL, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) {
+        var qs = buildBotanicalQuestions((data && data.gins) || []);
+        if (!qs.length) throw new Error("出題データなし");
+        cat.questions = qs;
+        startQuiz(cat);
+      })
+      .catch(function () {
+        $("quiz-card").innerHTML =
+          '<div class="quiz-result"><p>在庫カタログのデータを取得できませんでした。<br>通信状況を確認して、もう一度お試しください。</p>' +
+          '<div class="quiz-result-actions"><button class="quiz-next" type="button" id="quiz-back2">カテゴリへ戻る</button></div></div>';
+        $("quiz-back2").addEventListener("click", goHome);
+      });
   }
 
   function renderQuizCategories() {
@@ -68,14 +132,15 @@
         hardShown = true;
       }
       var best = quizBest[cat.id];
+      var denom = cat.generated ? BOTANICAL_N : cat.questions.length;
       var card = document.createElement("button");
       card.type = "button";
       card.className = "quiz-cat-card";
       card.innerHTML =
         "<strong>" + escapeHtml(cat.name) + "</strong>" +
-        "<span>" + escapeHtml(cat.desc) + " · 全" + cat.questions.length + "問</span>" +
-        (best != null ? '<span class="qc-best">自己ベスト ' + best + "/" + cat.questions.length + "</span>" : "");
-      card.addEventListener("click", function () { startQuiz(cat); });
+        "<span>" + escapeHtml(cat.desc) + (cat.generated ? "" : " · 全" + cat.questions.length + "問") + "</span>" +
+        (best != null ? '<span class="qc-best">自己ベスト ' + best + "/" + denom + "</span>" : "");
+      card.addEventListener("click", function () { launchCategory(cat); });
       wrap.appendChild(card);
     });
   }
@@ -226,7 +291,7 @@
         "</div>" +
       "</div>" +
       review;
-    $("quiz-retry").addEventListener("click", function () { startQuiz(s.cat); });
+    $("quiz-retry").addEventListener("click", function () { launchCategory(s.cat); });
     $("quiz-other").addEventListener("click", function () { goHome(); });
   }
 
