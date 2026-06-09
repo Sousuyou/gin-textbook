@@ -187,13 +187,15 @@
     var order = shuffle(qd.options.map(function (_, i) { return i; }));
     s.order = order;
 
-    // 補足ボックス（ボタニカル当てクイズで、ボタニカルを別枠表示する）
+    // 補足（ボタニカル当てクイズ）：ボタニカルをタグ（丸チップ）で並べる。
+    // 選択肢の四角いボタンと見分けやすくするため、丸み・中立色で表示する。
     var subBox = qd.sub
-      ? '<div class="quiz-sub" style="margin:12px 0 4px;padding:14px 16px;background:var(--green-soft);' +
-        'border:1px solid var(--green);border-left-width:5px;line-height:1.9;">' +
-        '<span style="display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;' +
-        'color:var(--green);margin-bottom:5px;">ボタニカル</span>' +
-        escapeHtml(qd.sub) + "</div>"
+      ? '<div class="quiz-sub" style="margin:10px 0 16px;display:flex;flex-wrap:wrap;gap:7px;">' +
+        splitBotanicals(qd.sub).map(function (b) {
+          return '<span style="display:inline-block;padding:5px 12px;background:var(--panel-soft);' +
+            'border-radius:16px;font-size:0.88em;color:var(--text);">' + escapeHtml(b) + "</span>";
+        }).join("") +
+        "</div>"
       : "";
 
     var card = $("quiz-card");
