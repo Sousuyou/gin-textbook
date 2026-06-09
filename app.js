@@ -16,8 +16,6 @@
 
   // ---- localStorage ヘルパー ----
   var STORE_READ = "ginbook_read";
-  var STORE_MEMO = "ginbook_memo";   // 「覚えた」章
-  var STORE_FAV = "ginbook_fav";     // お気に入り章
 
   function load(key) {
     try {
@@ -35,8 +33,6 @@
   }
 
   var readState = load(STORE_READ);
-  var memoState = load(STORE_MEMO);
-  var favState = load(STORE_FAV);
 
   // ---- 要素参照 ----
   var $ = function (id) { return document.getElementById(id); };
@@ -90,14 +86,11 @@
   }
 
   // ================= 教本：章一覧 =================
-  var listFilter = "all"; // all / unread / read / memorized / favorite
+  var listFilter = "all"; // all / read
 
   function passFilter(ch) {
     switch (listFilter) {
-      case "unread": return !readState[ch.num];
       case "read": return !!readState[ch.num];
-      case "memorized": return !!memoState[ch.num];
-      case "favorite": return !!favState[ch.num];
       default: return true;
     }
   }
@@ -126,9 +119,6 @@
       card.addEventListener("click", function () { openChapter(ch.num); });
 
       var isRead = readState[ch.num];
-      var marks = "";
-      if (favState[ch.num]) marks += '<span class="cc-flag cc-fav">★ お気に入り</span>';
-      if (memoState[ch.num]) marks += '<span class="cc-flag cc-memo">覚えた</span>';
 
       // 検索語ハイライト付きタイトル
       var titleHtml = q ? highlight(ch.title, q) : escapeHtml(ch.title);
@@ -139,7 +129,6 @@
           '<span class="cc-cat">' + (CAT_LABEL[ch.category] || ch.category) + "</span>" +
         "</div>" +
         '<div class="cc-title">' + titleHtml + "</div>" +
-        (marks ? '<div class="cc-marks">' + marks + "</div>" : "") +
         '<div class="cc-meta">' + ch.sections.length + " 節" +
           (q && hitCount ? ' · <span class="search-hits">該当 ' + hitCount + "</span>" : "") +
         "</div>";
@@ -163,7 +152,7 @@
   }
 
   function filterLabel(f) {
-    return { unread: "未読", read: "読了", memorized: "覚えた", favorite: "お気に入り" }[f] || f;
+    return { read: "読了" }[f] || f;
   }
 
   // 絞り込みチップ
@@ -220,7 +209,6 @@
     });
 
     updateReadToggle();
-    updateMarkToggles();
     renderReaderNav(num);
     window.scrollTo(0, 0);
   }
@@ -253,19 +241,6 @@
     btn.textContent = isRead ? "✓ 読了済み" : "読了にする";
   }
 
-  function updateMarkToggles() {
-    var fav = $("reader-fav");
-    var memo = $("reader-memo");
-    var isFav = !!favState[currentNum];
-    var isMemo = !!memoState[currentNum];
-    fav.classList.toggle("is-on", isFav);
-    fav.setAttribute("aria-pressed", isFav ? "true" : "false");
-    fav.textContent = isFav ? "★ お気に入り済み" : "★ お気に入り";
-    memo.classList.toggle("is-on", isMemo);
-    memo.setAttribute("aria-pressed", isMemo ? "true" : "false");
-    memo.textContent = isMemo ? "✓ 覚えた" : "覚えた";
-  }
-
   $("reader-read").addEventListener("click", function () {
     if (readState[currentNum]) {
       delete readState[currentNum];
@@ -275,20 +250,6 @@
     save(STORE_READ, readState);
     updateReadToggle();
     updateProgress();
-  });
-
-  $("reader-fav").addEventListener("click", function () {
-    if (favState[currentNum]) delete favState[currentNum];
-    else favState[currentNum] = true;
-    save(STORE_FAV, favState);
-    updateMarkToggles();
-  });
-
-  $("reader-memo").addEventListener("click", function () {
-    if (memoState[currentNum]) delete memoState[currentNum];
-    else memoState[currentNum] = true;
-    save(STORE_MEMO, memoState);
-    updateMarkToggles();
   });
 
   $("reader-back").addEventListener("click", function () {
