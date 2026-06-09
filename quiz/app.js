@@ -72,9 +72,14 @@
     var pool = gins.filter(function (g) {
       return g && g.botanicals && splitBotanicals(g.botanicals).length >= 3 && (g.kana || g.name);
     });
-    var label = function (g) { return g.kana || g.name; };
+    // 選択肢の表示名：「英語名 / カタカナ名」（片方しか無ければある方）
+    var label = function (g) {
+      var n = String(g.name || "").trim(), k = String(g.kana || "").trim();
+      if (n && k && n !== k) return n + " / " + k;
+      return n || k;
+    };
     return shuffle(pool).slice(0, BOTANICAL_N).map(function (ans) {
-      // 表示名が重複しない誤答を5つ選ぶ（カナが同じ別銘柄の混入を防ぐ）
+      // 表示名が重複しない誤答を5つ選ぶ（同名・カナ被りの別銘柄の混入を防ぐ）
       var seen = {}; seen[label(ans)] = true;
       var distractors = [];
       var others = shuffle(pool);
@@ -86,7 +91,8 @@
       }
       var choices = distractors.concat([ans]); // 表示時にapp側で再シャッフルされる
       return {
-        q: "このボタニカルで造られるジンはどれ？　／　" + ans.botanicals,
+        q: "以下のボタニカルで作られるジンはなに？",
+        sub: ans.botanicals,
         options: choices.map(label),
         answer: choices.length - 1,
         explain: (ans.kana || ans.name) + "（" + ans.name + "）｜" +
@@ -102,7 +108,7 @@
     $("quiz-home").hidden = true;
     $("quiz-runner").hidden = false;
     $("quiz-progress").textContent = "読み込み中…";
-    $("quiz-card").innerHTML = '<p class="quiz-loading">在庫カタログからジンのデータを取得しています…</p>';
+    $("quiz-card").innerHTML = '<p class="quiz-loading" style="padding:36px 12px;text-align:center;color:var(--muted);">在庫カタログからジンのデータを取得しています…</p>';
     fetch(CATALOG_URL, { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (data) {
@@ -138,7 +144,7 @@
       card.className = "quiz-cat-card";
       card.innerHTML =
         "<strong>" + escapeHtml(cat.name) + "</strong>" +
-        "<span>" + escapeHtml(cat.desc) + (cat.generated ? "" : " · 全" + cat.questions.length + "問") + "</span>" +
+        "<span>" + escapeHtml(cat.desc) + " · 全" + denom + "問</span>" +
         (best != null ? '<span class="qc-best">自己ベスト ' + best + "/" + denom + "</span>" : "");
       card.addEventListener("click", function () { launchCategory(cat); });
       wrap.appendChild(card);
@@ -181,9 +187,19 @@
     var order = shuffle(qd.options.map(function (_, i) { return i; }));
     s.order = order;
 
+    // 補足ボックス（ボタニカル当てクイズで、ボタニカルを別枠表示する）
+    var subBox = qd.sub
+      ? '<div class="quiz-sub" style="margin:12px 0 4px;padding:14px 16px;background:var(--green-soft);' +
+        'border:1px solid var(--green);border-left-width:5px;line-height:1.9;">' +
+        '<span style="display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;' +
+        'color:var(--green);margin-bottom:5px;">ボタニカル</span>' +
+        escapeHtml(qd.sub) + "</div>"
+      : "";
+
     var card = $("quiz-card");
     card.innerHTML =
       '<p class="quiz-q"><span class="q-cat">' + escapeHtml(cat.name) + "</span>" + escapeHtml(qd.q) + "</p>" +
+      subBox +
       '<div class="quiz-options"></div>' +
       '<div class="quiz-after" hidden></div>';
 
