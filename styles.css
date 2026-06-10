@@ -1308,3 +1308,26 @@ mark.hl {
 .reader-body .soutsu-note > ol:last-child {
   margin-bottom: 0;
 }
+
+/* 図解（研究所から書き出したSVG） */
+.reader-body figure.diagram {
+  margin: 26px 0;
+  padding: 18px 16px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-soft);
+}
+.reader-body figure.diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 580px;
+  margin: 0 auto;
+}
+.reader-body figure.diagram figcaption {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}

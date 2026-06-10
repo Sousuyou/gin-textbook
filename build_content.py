@@ -110,6 +110,22 @@ def md_to_html(lines):
             out.append('<aside class="soutsu-note">' + head + md_to_html(box_lines) + "</aside>")
             continue
 
+        # 図解ブロック（::: figure キャプション … :::）。中身はSVGなので生のまま出す。
+        m_fig = re.match(r"^:::\s*figure\b\s*(.*)$", stripped)
+        if m_fig:
+            flush_para()
+            cap = m_fig.group(1).strip()
+            fig_lines = []
+            i += 1
+            while i < n and not lines[i].strip().startswith(":::"):
+                fig_lines.append(lines[i])
+                i += 1
+            i += 1  # 閉じ ::: を読み飛ばす
+            inner = "\n".join(fig_lines).strip()
+            caphtml = f'<figcaption>{esc(cap)}</figcaption>' if cap else ""
+            out.append(f'<figure class="diagram">{inner}{caphtml}</figure>')
+            continue
+
         # テーブル
         if stripped.startswith("|") and "|" in stripped[1:]:
             flush_para()
@@ -209,6 +225,7 @@ def extract_sections(lines):
 def plain_text(lines):
     """検索用のプレーンテキスト（記法を除去）。"""
     text = "\n".join(lines)
+    text = re.sub(r":::\s*figure\b.*?:::", " ", text, flags=re.DOTALL)  # 図解SVGは検索対象から除く
     text = re.sub(r"[#*`>|]", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
