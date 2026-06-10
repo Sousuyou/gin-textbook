@@ -58,6 +58,16 @@
     return '<a class="quiz-textbook-link" href="' + TEXTBOOK_URL + '">教本で復習する →</a>';
   }
 
+  // ボタニカル当ては該当銘柄へ直リンク。それ以外は教本リンク。
+  function answerLink(catId, linkName) {
+    if (catId === "botanical_guess" && linkName) {
+      return '<a class="quiz-textbook-link" target="_blank" rel="noopener" href="' +
+        "https://sousuyou.github.io/gin-stock/?q=" + encodeURIComponent(linkName) +
+        '">「' + escapeHtml(linkName) + '」をカタログで見る →</a>';
+    }
+    return textbookLink(catId);
+  }
+
   // ====== ボタニカル当てクイズ（在庫カタログ連動）======
   // 同一オリジンの公開カタログ。CSP connect-src 'self' 対応のため相対パスで取得。
   var CATALOG_URL = "../../gin-stock/gins.json";
@@ -97,7 +107,8 @@
         answer: choices.length - 1,
         explain: (ans.kana || ans.name) + "（" + ans.name + "）｜" +
           (ans.country || "産地不明") + "・" + (ans.abv != null ? ans.abv + "%" : "度数不明") +
-          (String(ans.note || "").trim() ? "。" + String(ans.note).trim().slice(0, 70) : ""),
+          (String(ans.note || "").trim() ? "。" + String(ans.note).trim() : ""),
+        linkName: String(ans.name || ans.kana || "").trim(), // 該当銘柄へ直リンクするための名前
       };
     });
   }
@@ -255,6 +266,7 @@
         your: qd.options[picked],
         correct: qd.options[qd.answer],
         explain: qd.explain,
+        linkName: qd.linkName,
       });
     }
 
@@ -264,7 +276,7 @@
       '<div class="quiz-explain"><strong>' +
         (picked === qd.answer ? "○ 正解！" : "× 不正解。正解は「" + escapeHtml(qd.options[qd.answer]) + "」") +
       "</strong>" + escapeHtml(qd.explain) +
-      '<p class="quiz-explain-link">' + textbookLink(quizSession.cat.id) + "</p>" +
+      '<p class="quiz-explain-link">' + answerLink(quizSession.cat.id, qd.linkName) + "</p>" +
       "</div>" +
       '<button class="quiz-next" type="button">' +
         (quizSession.idx + 1 >= quizSession.cat.questions.length ? "結果を見る" : "次の問題へ") +
@@ -306,6 +318,8 @@
               '<p class="qr-line qr-correct"><span>○ 正解</span>' + escapeHtml(w.correct) + "</p>" +
               '<p class="qr-line qr-your"><span>× あなた</span>' + escapeHtml(w.your) + "</p>" +
               '<p class="qr-explain">' + escapeHtml(w.explain) + "</p>" +
+              (s.cat.id === "botanical_guess" && w.linkName
+                ? '<p class="quiz-explain-link">' + answerLink(s.cat.id, w.linkName) + "</p>" : "") +
             "</div>";
           }).join("") +
         "</div>";
