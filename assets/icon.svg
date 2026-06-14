@@ -1,13 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ジン教本">
   <rect width="512" height="512" rx="96" fill="#15120f"/>
-  <!-- ジンのボトル -->
-  <path d="M222 96h68v54l26 36v210a20 20 0 0 1-20 20H216a20 20 0 0 1-20-20V186l26-36V96Z" fill="#d8ad62"/>
-  <rect x="196" y="300" width="120" height="116" rx="8" fill="#2c251f"/>
-  <!-- ジュニパー（ボタニカル） -->
-  <circle cx="256" cy="120" r="20" fill="#8bb58f"/>
-  <circle cx="224" cy="138" r="11" fill="#8bb58f"/>
-  <circle cx="288" cy="138" r="11" fill="#8bb58f"/>
-  <!-- ラベル文字 -->
-  <path d="M222 348h68" stroke="#f3ece2" stroke-width="16" stroke-linecap="round"/>
-  <path d="M232 378h48" stroke="#f3ece2" stroke-width="12" stroke-linecap="round"/>
+  <path d="M130 128 L382 128 L256 276 Z" fill="#d8ad62"/>
+  <rect x="246" y="274" width="20" height="92" fill="#d8ad62"/>
+  <rect x="186" y="364" width="140" height="22" rx="11" fill="#d8ad62"/>
+  <circle cx="256" cy="182" r="26" fill="#8bb58f"/>
+  <path d="M236 206 L322 132" stroke="#15120f" stroke-width="10" stroke-linecap="round"/>
 </svg>
