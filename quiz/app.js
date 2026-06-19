@@ -72,7 +72,16 @@
   // 同一オリジンの公開カタログ。CSP connect-src 'self' 対応のため相対パスで取得。
   var CATALOG_URL = "../../gin-stock/gins.json";
   var BOTANICAL_N = 10; // ボタニカル当ての1回の出題数
-  var QUIZ_PICK = 10;   // 通常カテゴリも毎回ランダム順＋最大この問数を抽出（暗記ゲー化を防ぐ）
+  // 通常カテゴリは毎回ランダム順。tierごとに1回の出題数を変える（暗記ゲー化を防ぐ）。
+  // 基礎＝サクッと小テスト。応用・研究・腕試し＝全問（腕試しはフルの腕試し）。
+  // ここに無いtierは「全問」になる。
+  var PICK_BY_TIER = { "基礎": 5 };
+  function pickCount(cat) {
+    if (cat.generated) return BOTANICAL_N;
+    var n = PICK_BY_TIER[cat.tier];
+    var len = (cat.questions || []).length;
+    return (n == null) ? len : Math.min(n, len);
+  }
 
   function splitBotanicals(s) {
     return String(s || "").split(/[、,／\/]/).map(function (x) { return x.trim(); }).filter(Boolean);
@@ -162,7 +171,7 @@
         }
       }
       var best = quizBest[cat.id];
-      var denom = cat.generated ? BOTANICAL_N : Math.min(QUIZ_PICK, cat.questions.length);
+      var denom = pickCount(cat);
       var card = document.createElement("button");
       card.type = "button";
       card.className = "quiz-cat-card";
@@ -186,8 +195,9 @@
     // 生成カテゴリ（ボタニカル当て）は launchCategory で抽出済みのためそのまま使う。
     var pool = (cat.questions || []).slice();
     if (!cat.generated) {
+      var n = pickCount(cat);
       pool = shuffle(pool);
-      if (pool.length > QUIZ_PICK) pool = pool.slice(0, QUIZ_PICK);
+      if (pool.length > n) pool = pool.slice(0, n);
     }
     quizSession = { cat: cat, questions: pool, idx: 0, score: 0, wrong: [], order: null };
     $("quiz-home").hidden = true;
