@@ -71,7 +71,8 @@
   // ====== ボタニカル当てクイズ（在庫カタログ連動）======
   // 同一オリジンの公開カタログ。CSP connect-src 'self' 対応のため相対パスで取得。
   var CATALOG_URL = "../../gin-stock/gins.json";
-  var BOTANICAL_N = 10; // 1回の出題数
+  var BOTANICAL_N = 10; // ボタニカル当ての1回の出題数
+  var QUIZ_PICK = 10;   // 通常カテゴリも毎回ランダム順＋最大この問数を抽出（暗記ゲー化を防ぐ）
 
   function splitBotanicals(s) {
     return String(s || "").split(/[、,／\/]/).map(function (x) { return x.trim(); }).filter(Boolean);
@@ -161,7 +162,7 @@
         }
       }
       var best = quizBest[cat.id];
-      var denom = cat.generated ? BOTANICAL_N : cat.questions.length;
+      var denom = cat.generated ? BOTANICAL_N : Math.min(QUIZ_PICK, cat.questions.length);
       var card = document.createElement("button");
       card.type = "button";
       card.className = "quiz-cat-card";
@@ -171,7 +172,7 @@
       card.innerHTML =
         "<strong>" + escapeHtml(cat.name) + "</strong>" +
         "<span>" + escapeHtml(cat.desc) + " · 全" + denom + "問</span>" +
-        (best != null ? '<span class="qc-best">自己ベスト ' + best + "/" + denom + "</span>" : "");
+        (best != null ? '<span class="qc-best">自己ベスト ' + Math.min(best, denom) + "/" + denom + "</span>" : "");
       card.addEventListener("click", function () { launchCategory(cat); });
       wrap.appendChild(card);
     });
@@ -180,7 +181,15 @@
   var quizSession = null;
 
   function startQuiz(cat) {
-    quizSession = { cat: cat, idx: 0, score: 0, wrong: [], order: null };
+    // 出題する問題リストを用意する。
+    // 通常カテゴリは毎回シャッフルし、最大 QUIZ_PICK 問だけ抽出（繰り返しても順番・顔ぶれが変わる）。
+    // 生成カテゴリ（ボタニカル当て）は launchCategory で抽出済みのためそのまま使う。
+    var pool = (cat.questions || []).slice();
+    if (!cat.generated) {
+      pool = shuffle(pool);
+      if (pool.length > QUIZ_PICK) pool = pool.slice(0, QUIZ_PICK);
+    }
+    quizSession = { cat: cat, questions: pool, idx: 0, score: 0, wrong: [], order: null };
     $("quiz-home").hidden = true;
     $("quiz-runner").hidden = false;
     renderQuizQuestion();
@@ -199,15 +208,16 @@
   function renderQuizQuestion() {
     var s = quizSession;
     var cat = s.cat;
-    $("quiz-progress").textContent = "第" + (s.idx + 1) + "問 / " + cat.questions.length;
-    setBar(s.idx + 1, cat.questions.length);
+    var list = s.questions;
+    $("quiz-progress").textContent = "第" + (s.idx + 1) + "問 / " + list.length;
+    setBar(s.idx + 1, list.length);
 
-    if (s.idx >= cat.questions.length) {
+    if (s.idx >= list.length) {
       renderQuizResult();
       return;
     }
 
-    var qd = cat.questions[s.idx];
+    var qd = list[s.idx];
 
     // 選択肢をシャッフルし、表示順 → 元indexの対応を作る
     var order = shuffle(qd.options.map(function (_, i) { return i; }));
@@ -279,7 +289,7 @@
       '<p class="quiz-explain-link">' + answerLink(quizSession.cat.id, qd.linkName) + "</p>" +
       "</div>" +
       '<button class="quiz-next" type="button">' +
-        (quizSession.idx + 1 >= quizSession.cat.questions.length ? "結果を見る" : "次の問題へ") +
+        (quizSession.idx + 1 >= quizSession.questions.length ? "結果を見る" : "次の問題へ") +
       "</button>";
 
     after.querySelector(".quiz-next").addEventListener("click", function () {
@@ -291,7 +301,7 @@
 
   function renderQuizResult() {
     var s = quizSession;
-    var total = s.cat.questions.length;
+    var total = s.questions.length;
     var prev = quizBest[s.cat.id];
     if (prev == null || s.score > prev) {
       quizBest[s.cat.id] = s.score;
