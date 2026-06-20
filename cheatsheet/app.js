@@ -11,12 +11,24 @@
     });
   }
 
+  function renderIndex() {
+    var nav = $("cheat-index");
+    if (!nav) return;
+    if (!CHEATS.length) { nav.style.display = "none"; return; }
+    var html = '<span class="cheat-index-label">目次</span>';
+    html += CHEATS.map(function (c, i) {
+      return '<a href="#cheat-' + i + '">' + escapeHtml(c.title) + "</a>";
+    }).join("");
+    nav.innerHTML = html;
+  }
+
   function renderCheatsheet() {
     var wrap = $("cheatsheet-body");
     wrap.innerHTML = "";
-    CHEATS.forEach(function (c) {
+    CHEATS.forEach(function (c, i) {
       var card = document.createElement("div");
       card.className = "cheat-card";
+      card.id = "cheat-" + i;
       var rows = c.rows.map(function (r) {
         return "<tr>" + r.map(function (cell) { return "<td>" + escapeHtml(cell) + "</td>"; }).join("") + "</tr>";
       }).join("");
@@ -34,6 +46,7 @@
   }
 
   renderCheatsheet();
+  renderIndex();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {

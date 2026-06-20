@@ -15,6 +15,44 @@
     <link rel="apple-touch-icon" href="../assets/icon.svg" />
     <link rel="stylesheet" href="../styles.css" />
     <link rel="stylesheet" href="https://sousuyou.github.io/top/theme.css" />
+    <!-- 早見表の頭出しナビ（このページ専用のスタイル。共有styles.cssは触らない） -->
+    <style>
+      html { scroll-behavior: smooth; }
+      .cheat-index {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 22px;
+        padding: 12px;
+        background: var(--panel-soft, #f3f2ee);
+        border: 1px solid var(--line, #c9c8c2);
+      }
+      .cheat-index-label {
+        width: 100%;
+        margin: 0 0 4px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted, #6f6d67);
+      }
+      .cheat-index a {
+        display: inline-block;
+        padding: 6px 10px;
+        font-size: 13px;
+        line-height: 1.2;
+        text-decoration: none;
+        color: var(--text, #161616);
+        background: var(--panel, #fbfaf6);
+        border: 1px solid var(--line-strong, #242424);
+      }
+      .cheat-index a:hover,
+      .cheat-index a:focus {
+        background: var(--accent, #161616);
+        color: var(--on-accent, #fff);
+      }
+      /* 共通ナビに見出しが隠れないよう、ジャンプ先に余白を確保 */
+      .cheat-card { scroll-margin-top: 72px; }
+    </style>
   </head>
   <body class="has-nav">
     <!-- 共通ナビ：中身は nav.js が自動生成（JS無効時はTOPリンクだけ残る） -->
@@ -34,6 +72,9 @@
           </p>
         </div>
       </header>
+
+      <!-- 頭出しナビ：中身は app.js が表データから自動生成 -->
+      <nav class="cheat-index" id="cheat-index" aria-label="早見表の目次"></nav>
 
       <section class="view is-active" aria-label="早見表">
         <div id="cheatsheet-body" class="cheatsheet-body"></div>
