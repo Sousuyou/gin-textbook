@@ -1,5 +1,5 @@
 // Bar Soutsu 早見表 — Service Worker（stale-while-revalidate）
-var CACHE = "gincheat-v7";
+var CACHE = "gincheat-v8";
 var ASSETS = [
   "./",
   "./index.html",
